@@ -5,11 +5,10 @@
       src="~assets/you-access-logo-01.svg"
       style="width: 300px; height: 300px"
     />
+    <div>
+      <h1>Home admin</h1>
+    </div>
   </q-page>
 </template>
 
-<script setup>
-defineOptions({
-  name: "IndexPage",
-});
-</script>
+<script setup></script>
