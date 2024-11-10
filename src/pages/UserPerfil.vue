@@ -1,6 +1,5 @@
 <template>
   <div class="row">
-    <!-- Columna central en pantalla grande -->
     <div class="col-md-2"></div>
     <div class="col-sm-12 col-md-8 q-pt-lg q-px-md xs-hide">
       <q-card class="my-card" style="background-color: #f0f0f0">
@@ -26,13 +25,11 @@
             />
           </q-item-section>
         </q-item>
-        <!-- Separador con color personalizado -->
         <q-separator class="custom-separator" />
 
         <!-- Información del trabajador -->
         <q-item>
           <div class="row">
-            <!-- Títulos en negrita -->
             <div class="col-sm-2 q-py-md">
               <p class="q-mb-xs" style="font-weight: bold;">Código</p>
               <p class="q-mb-xs" style="font-weight: bold;">Correo</p>
@@ -50,7 +47,6 @@
 
             <div class="col-sm-1"></div>
 
-            <!-- Información de la columna 2 con Flexbox para mantener todo en una fila -->
             <div class="col q-py-md q-pl-xl" style="display: flex; flex-direction: column;">
               <div class="row">
                 <div class="col">
@@ -94,12 +90,8 @@
           </q-item-section>
         </q-item>
 
-        <!-- Separador con color personalizado en la versión móvil -->
-        <q-separator class="custom-separator"/>
-
         <q-item>
           <q-item-section>
-            <!-- Iconos de Quasar con icono 'school' para el departamento -->
             <p>
               <q-icon name="list" size="20px" style="vertical-align: middle" />
               Departamento de ingeniería
@@ -169,11 +161,11 @@ const data = ref([
 }
 
 .q-mb-xs {
-  margin-bottom: 0.5rem; /* Aumenta el espacio entre filas */
+  margin-bottom: 0.5rem;
 }
 
 .q-pl-xl {
-  padding-left: 2rem; /* Extra padding to align columns better */
+  padding-left: 2rem;
 }
 
 .row {
@@ -182,6 +174,6 @@ const data = ref([
 }
 
 .custom-separator {
-  border-color: #ccc; /* Color igual al separador en la vista de PC */
+  border-color: #ccc;
 }
 </style>
