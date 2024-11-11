@@ -1,9 +1,113 @@
 <template>
-  <div>
-    <h1 class="text-h4">Vista de login</h1>
+  <div class="login-page flex flex-center">
+    <div class="login-container q-pa-md q-mt-xl">
+      <div class="text-h4 text-primary text-center font-bold">
+        Iniciar sesión
+      </div>
+      <div class="text-subtitle1 text-center q-mt-md welcome-text">
+        Bienvenido de nuevo
+      </div>
+
+      <q-form @submit="onLogin" class="q-mt-lg">
+        <q-input
+          v-model="email"
+          type="email"
+          label="Correo"
+          outlined
+          dense
+          class="q-mb-md full-width"
+          :rules="[(val) => !!val || 'El correo es obligatorio']"
+        />
+        <q-input
+          v-model="password"
+          type="password"
+          label="Contraseña"
+          outlined
+          dense
+          class="q-mb-sm full-width"
+          :rules="[(val) => !!val || 'La contraseña es obligatoria']"
+        />
+
+        <div class="q-mb-sm full-width">
+          <q-btn
+            flat
+            label="¿Has olvidado tu contraseña?"
+            @click="onForgotPassword"
+            class="text-dark-blue full-width forgot-password-btn"
+          />
+        </div>
+
+        <q-btn
+          label="Iniciar sesión"
+          color="primary"
+          type="submit"
+          class="full-width q-mt-sm"
+        />
+      </q-form>
+
+      <q-btn
+        label="Iniciar con Google"
+        class="full-width q-mt-md google-btn"
+        @click="onGoogleLogin"
+        flat
+      />
+    </div>
   </div>
 </template>
 
-<script setup></script>
+<script>
+export default {
+  data() {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    onLogin() {
+      // Lógica de autenticación
+    },
+    onGoogleLogin() {
+      // Lógica para iniciar sesión con Google
+    },
+    onForgotPassword() {
+      // Lógica para recuperar contraseña
+    },
+  },
+};
+</script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.login-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+.login-container {
+  max-width: 400px; /* Aumenta el tamaño del contenedor */
+  width: 100%;
+}
+.full-width {
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+}
+.font-bold {
+  font-weight: 700;
+}
+.welcome-text {
+  font-size: 1.25rem; /* Ajuste el tamaño de la fuente */
+}
+.text-dark-blue {
+  color: #0d47a1; /* Azul oscuro */
+}
+.text-right {
+  text-align: right;
+}
+.google-btn {
+  background-color: #f5f5f5; /* Fondo gris claro */
+  color: #0d47a1; /* Texto en azul oscuro */
+  border-radius: 5px;
+}
+.forgot-password-btn {
+  justify-content: flex-end; /* Alinea el texto a la derecha */
+  display: flex; /* Asegura que el botón use flexbox para la alineación */
+}
+</style>
