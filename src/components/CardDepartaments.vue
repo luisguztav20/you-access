@@ -1,19 +1,27 @@
 <template>
-  <q-card class="my-card card-mod cursor-pointer q-mt-lg q-mr-lg">
-    <img class="card-img" src="/src/assets/card-image.webp" />
+  <div class="col-12 col-sm-6 col-md-4">
+    <q-card class="my-card card-mod cursor-pointer">
+      <img class="card-img" src="/src/assets/card-image.webp" />
 
-    <q-card-section>
-      <h3 class="text-subtitle1 q-ma-none q-pb-md text-weight-regular">
-        {{ departamento.title }} - {{ departamento.id }}
-      </h3>
-      <q-btn
-        color="primary"
-        label="Gestionar"
-        rounded
-        @click="$emit('redireccion')"
-      />
-    </q-card-section>
-  </q-card>
+      <q-card-section>
+        <h3 class="text-subtitle1 q-ma-none q-pb-md text-weight-bold">
+          {{ departamento.name }} - {{ departamento._id }}
+        </h3>
+        <p>
+          Descripcion:
+          <span class="text-grey-7">{{ departamento.description }}</span>
+        </p>
+      </q-card-section>
+      <q-card-actions>
+        <q-btn
+          color="primary"
+          label="Gestionar"
+          rounded
+          @click="$emit('redireccion')"
+        />
+      </q-card-actions>
+    </q-card>
+  </div>
 </template>
 
 <script setup>
@@ -30,11 +38,10 @@ defineEmits(["redireccion"]);
 <style lang="scss" scoped>
 .card-mod {
   border-radius: 15px;
-  max-width: 300px;
 }
 
 .card-img {
-  width: 300px;
-  height: 200px;
+  aspect-ratio: 16/9;
+  max-height: 200px;
 }
 </style>

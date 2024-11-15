@@ -12,16 +12,14 @@
           <q-separator />
         </div>
       </div>
-      <div class="row justify-center q-my-md">
-        <div class="row col-11 justify-center">
+        <div class="row q-col-gutter-sm q-my-md">
           <CardDepartaments
             v-for="(departamento, key) in departamentos"
-            :key="key"
+            :key="departamento._id"
             :departamento="departamento"
-            @redireccion="redireccion(departamento.name)"
+            @redireccion="redireccion(departamento.name, key)"
           />
         </div>
-      </div>
     </section>
   </q-page>
 </template>
@@ -31,12 +29,24 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { departaments } from "../data/departaments";
 import CardDepartaments from "../components/CardDepartaments.vue";
+import { api } from "src/boot/axios";
 
 const departamentos = ref([]);
 const router = useRouter();
 
 onMounted(() => {
-  departamentos.value = departaments;
+  api
+    .get("/api/department", {
+      withCredentials: true,
+    })
+    .then((response) => {
+      departamentos.value = response.data;
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  // departamentos.value = departaments;
 });
 
 function redireccion(nombre) {
