@@ -1,9 +1,12 @@
 <template>
   <div class="column" style="height: 100vh">
-    <q-toolbar class="row justify-center col-1">
-      <img src="/src/assets/you-access-logo-01.svg" style="width: 125px" />
-    </q-toolbar>
-    <div class="row justify-center items-center col-11">
+    <nav>
+      <q-toolbar class="row justify-center col-1">
+        <img src="/src/assets/you-access-logo-01.svg" style="width: 125px" />
+      </q-toolbar>
+    </nav>
+
+    <main class="row justify-center items-center col-11">
       <img
         src="/src/assets/welcom.svg"
         alt="imagen welcom"
@@ -29,7 +32,7 @@
           <q-btn flat color="primary" label="Crear cuenta" to="/signup" />
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
