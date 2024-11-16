@@ -2,7 +2,7 @@
   <q-dialog v-model="localDialog">
     <q-card style="width: 800px; border-radius: 15px">
       <q-card-section class="row items-center q-pb-none">
-        <h2 class="text-h6">Marcar salida</h2>
+        <h2 class="text-h6">Datos del empleado</h2>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>

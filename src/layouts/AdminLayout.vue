@@ -59,7 +59,7 @@ const linksList = [
   {
     title: "Editar empleado",
     icon: "delete",
-    name: "delete",
+    name: "admin/edit-employee",
   },
 ];
 
