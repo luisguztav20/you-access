@@ -55,25 +55,43 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    onLogin() {
-      // Lógica de autenticación
-    },
-    onGoogleLogin() {
-      // Lógica para iniciar sesión con Google
-    },
-    onForgotPassword() {
-      // Lógica para recuperar contraseña
-    },
-  },
+<script setup>
+import { ref } from "vue";
+import { api } from "src/boot/axios";
+import { useRouter } from "vue-router";
+import { onMounted } from "vue";
+
+const router = useRouter();
+
+const email = ref("");
+const password = ref("");
+
+const onLogin = async () => {
+  try {
+    const response = await api.post(
+      "api/auth/login",
+      {
+        email: email.value,
+        password: password.value,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.data.message === "Admin logged in successfully") {
+      router.push("/admin");
+    } else {
+      router.push("/user");
+    }
+    console.log(response.data);
+  } catch (error) {
+    // Manejar el error
+    console.error(error);
+  }
+};
+
+const onForgotPassword = () => {
+  // Lógica para recuperar contraseña
 };
 </script>
 

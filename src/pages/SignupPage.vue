@@ -1,6 +1,9 @@
 <template>
   <div class="signup-page flex flex-center">
-    <div class="signup-container q-pa-md q-mt-xl bg-white" style="border-radius: 10px;">
+    <div
+      class="signup-container q-pa-md q-mt-xl bg-white"
+      style="border-radius: 10px"
+    >
       <div class="text-h4 text-primary text-center font-bold">Crear cuenta</div>
       <div class="text-subtitle2 text-center q-mt-md small-text">
         Crea una cuenta para disfrutar la experiencia
@@ -88,8 +91,11 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { api } from "src/boot/axios";
+import { Cookies } from "quasar";
 
+const router = useRouter();
 const name = ref("");
 const lastName = ref("");
 const email = ref("");
@@ -97,9 +103,11 @@ const password = ref("");
 const confirmPassword = ref("");
 const showModal = ref(false);
 
-function onSignup() {
-  api
-    .post(
+async function onSignup() {
+  Cookies.remove("x-token");
+
+  try {
+    const response = await api.post(
       "/api/auth/register",
       {
         name: name.value,
@@ -110,22 +118,21 @@ function onSignup() {
       {
         withCredentials: true,
       }
-    )
-    .then((response) => {
-      console.log(`Response: ${response.data.message}`);
-      if (response.status === 201) {
-        clearFields();
-      }
-    })
-    .catch((error) => {
-      console.log(`Error: ${error}`);
-      if (
-        (error.response && error.response.status === 400) ||
-        error.response.data.error === "User already exists"
-      ) {
-        showModal.value = true;
-      }
-    });
+    );
+    clearFields();
+    router.push("/user");
+    if (response.status === 201) {
+      this.$router.push("/user");
+    }
+  } catch (error) {
+    console.log(`Error: ${error}`);
+    if (
+      (error.response && error.response.status === 400) ||
+      error.response.data.error === "User already exists"
+    ) {
+      showModal.value = true;
+    }
+  }
 }
 
 function clearFields() {
