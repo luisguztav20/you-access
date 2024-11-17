@@ -9,7 +9,7 @@
                 {{ nameDepartament }}
               </h2>
               <h3 class="text-h6 text-weight-light q-mt-none">
-                Mienbros del deparatamento
+                Mienbros del departamento
               </h3>
             </div>
             <searchEmployeeInput v-model="nameSearch" />

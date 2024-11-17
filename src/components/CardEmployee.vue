@@ -36,7 +36,7 @@
             flat
             :icon="iconName.name"
             color="primary"
-            @click="openDialog(iconName.function)"
+            @click="Dialog(iconName.function)"
           />
         </q-card-actions>
       </div>
@@ -46,13 +46,11 @@
       v-model="asistem"
       :employeeId="empleado.id"
       :employeeName="empleado.name"
-      :employeeCurrent="empleado.current"
     />
     <ExitDialog
       v-model="exit"
       :employeeId="empleado.id"
       :employeeName="empleado.name"
-      :employeeCurrent="empleado.current"
     />
 
     <ReportDialog
@@ -92,19 +90,23 @@ const props = defineProps({
   },
 });
 
+const openDialog = (dialog) => {
+  dialog.value = true;
+};
+
 // const { iconsNames } = defineProps([iconsNames]);
 // const { icon, run, open } = toRefs(iconsNames);
 
-function openDialog(name) {
+function Dialog(name) {
   if (name === "asistem") {
-    asistem.value = true;
+    openDialog(asistem);
   }
 
   if (name === "exit") {
-    exit.value = true;
+    openDialog(exit);
   }
   if (name === "report") {
-    report.value = true;
+    openDialog(report);
   }
   if (name === "edit") {
     edit.value = true;

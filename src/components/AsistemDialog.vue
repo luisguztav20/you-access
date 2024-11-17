@@ -22,8 +22,7 @@
           label="Fecha"
           class="q-py-md full-width"
           :error="errorDate"
-          :error-message="errorMessageDate"
-          @blur="validateDate"
+          :error-message="errorMessage"
         />
         <q-input
           v-model="time"
@@ -32,8 +31,7 @@
           label="Hora"
           class="q-py-md"
           :error="errorTime"
-          :error-message="errorMessageTime"
-          @blur="validateTime"
+          :error-message="errorMessage"
         />
         <div class="q-py-md">
           <q-input
@@ -42,8 +40,7 @@
             type="textarea"
             label="Observaciones"
             :error="errorText"
-            :error-message="errorMessageText"
-            @blur="validateText"
+            :error-message="errorMessage"
           />
         </div>
         <q-btn
@@ -58,11 +55,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { workpeople } from "src/data/workpeople";
 
 const props = defineProps({
-  modelValue: Boolean,
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
   employeeId: {
     type: String,
     required: true,
@@ -80,32 +80,24 @@ const date = ref("");
 const time = ref("");
 const text = ref("");
 const errorDate = ref(false);
-const errorMessageDate = ref("Campo vacío");
 const errorTime = ref(false);
-const errorMessageTime = ref("Campo vacío");
 const errorText = ref(false);
-const errorMessageText = ref("Campo vacío");
+const errorMessage = "Campo vacio ingrese un valor";
 
-// Funciones de validación individuales para cada campo
-const validateDate = () => {
-  errorDate.value = date.value === "";
-};
+// Funciones de validación campos
 
-const validateTime = () => {
-  errorTime.value = time.value === "";
-};
-
-const validateText = () => {
-  errorText.value = text.value === "";
-};
+function validateField(value, errorRef) {
+  errorRef.value = value === "";
+  return !errorRef.value;
+}
 
 // Llamada al hacer clic en el botón "Marcar asistencia"
 const onClick = () => {
-  validateDate();
-  validateTime();
-  validateText();
+  const validDate = validateField(date.value, errorDate);
+  const validTime = validateField(time.value, errorTime);
+  const validText = validateField(text.value, errorText);
 
-  if (!errorDate.value && !errorTime.value && !errorText.value) {
+  if (validDate && validTime && validText) {
     console.log(
       `se marco ingresa el dia: ${date.value} a las ${time.value} con observaciones ${text.value}`
     );
@@ -130,7 +122,7 @@ function markAsAbsent() {
   }
 }
 
-// Emitir el evento para actualizar el valor en el componente padre
+//Emitir el evento para actualizar el valor en el componente padre
 watch(localDialog, (newValue) => {
   emit("update:modelValue", newValue);
 
@@ -140,7 +132,7 @@ watch(localDialog, (newValue) => {
   }
 });
 
-// Sincronizar cambios cuando la prop `modelValue` cambie desde el padre
+//Sincronizar cambios cuando la prop `modelValue` cambie desde el padre
 watch(
   () => props.modelValue,
   (newValue) => {

@@ -35,20 +35,10 @@
           :error-message="errorMessageTime"
           @blur="validateTime"
         />
-        <div class="q-py-md">
-          <q-input
-            v-model="text"
-            outlined
-            type="textarea"
-            label="Observaciones"
-            :error="errorText"
-            :error-message="errorMessageText"
-            @blur="validateText"
-          />
-        </div>
+
         <q-btn
           color="primary"
-          label="Marcar salida"
+          label="Guardar cambios"
           class="q-my-md full-width"
           @click="onClick"
         />
