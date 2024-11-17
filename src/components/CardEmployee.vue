@@ -59,16 +59,12 @@
       :employeeName="empleado.name"
     />
 
-    <EditEmployee
-      v-model="edit"
-      :employeeId="empleado.id"
-      :employeeName="empleado.name"
-    />
+    <EditEmployee v-model="edit" :employee="empleado" />
   </q-card>
 </template>
 
 <script setup>
-import { ref, onMounted, toRefs } from "vue";
+import { ref } from "vue";
 import AsitemDialog from "../components/AsistemDialog.vue";
 import ExitDialog from "../components/ExitDialog.vue";
 import ReportDialog from "../components/ReportDialog.vue";
@@ -94,9 +90,6 @@ const openDialog = (dialog) => {
   dialog.value = true;
 };
 
-// const { iconsNames } = defineProps([iconsNames]);
-// const { icon, run, open } = toRefs(iconsNames);
-
 function Dialog(name) {
   if (name === "asistem") {
     openDialog(asistem);
@@ -110,6 +103,14 @@ function Dialog(name) {
   }
   if (name === "edit") {
     edit.value = true;
+  }
+  if (name == "delete") {
+    console.log(
+      "empledao : " +
+        props.empleado.name +
+        " eliminado ID: " +
+        props.empleado.id
+    );
   }
 }
 </script>

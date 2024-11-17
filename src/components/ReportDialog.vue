@@ -38,13 +38,13 @@
         <q-btn
           color="primary"
           icon="description"
-          label="Consultar asistencia"
+          label="Consultar asistencias"
           class="q-my-md"
-          @click="onClick"
+          @click="showReports"
         />
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
-      <q-card-section>
+      <q-card-section v-if="stateReport">
         <div class="q-pa-md">
           <q-table
             style="max-height: 400px"
@@ -62,7 +62,7 @@
             icon="picture_as_pdf"
             label="Generar reporte"
             class="q-my-md"
-            @click="onClick"
+            @click="generarReporte"
           />
         </div>
       </q-card-section>
@@ -92,6 +92,7 @@ const date = ref("");
 const dateEnd = ref("");
 const errorDate = ref(false);
 const errorMessageDate = ref("Campo vacío");
+const stateReport = ref(false);
 
 // Funciones de validación
 const validateDate = () => {
@@ -99,14 +100,18 @@ const validateDate = () => {
 };
 
 // Llamada al hacer clic en el botón "Marcar asistencia"
-const onClick = () => {
+const showReports = () => {
   validateDate();
   if (!errorDate.value) {
     //Funciones cuando no hay campos vacios
-    date.value = "";
-    localDialog.value = false;
+
+    stateReport.value = true;
   }
 };
+
+function generarReporte() {
+  console.log("Reporte generado ");
+}
 
 // Emitir el evento para actualizar el valor en el componente padre
 watch(localDialog, (newValue) => {
@@ -130,6 +135,7 @@ watch(
 const resetFields = () => {
   date.value = "";
   errorDate.value = false;
+  stateReport.value = false;
 };
 
 const columns = [

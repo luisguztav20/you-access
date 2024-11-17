@@ -55,8 +55,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { workpeople } from "src/data/workpeople";
+import { Notify } from "quasar";
 
 const props = defineProps({
   modelValue: {
@@ -84,8 +85,14 @@ const errorTime = ref(false);
 const errorText = ref(false);
 const errorMessage = "Campo vacio ingrese un valor";
 
-// Funciones de validación campos
+const notifyPositive = () => {
+  Notify.create({
+    type: "positive",
+    message: 'This is a "positive" type notification.',
+  });
+};
 
+// Funciones de validación campos
 function validateField(value, errorRef) {
   errorRef.value = value === "";
   return !errorRef.value;
@@ -93,21 +100,18 @@ function validateField(value, errorRef) {
 
 // Llamada al hacer clic en el botón "Marcar asistencia"
 const onClick = () => {
-  const validDate = validateField(date.value, errorDate);
-  const validTime = validateField(time.value, errorTime);
-  const validText = validateField(text.value, errorText);
+  validateField(date.value, errorDate);
+  validateField(time.value, errorTime);
+  validateField(text.value, errorText);
 
-  if (validDate && validTime && validText) {
+  if (!errorDate.value && !errorTime.value && !errorText.value) {
     console.log(
       `se marco ingresa el dia: ${date.value} a las ${time.value} con observaciones ${text.value}`
     );
 
     markAsAbsent();
-
-    date.value = "";
-    time.value = "";
-    text.value = "";
     localDialog.value = false;
+    notifyPositive();
   }
 };
 

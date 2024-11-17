@@ -22,8 +22,7 @@
           label="Fecha"
           class="q-py-md full-width"
           :error="errorDate"
-          :error-message="errorMessageDate"
-          @blur="validateDate"
+          :error-message="errorMessage"
         />
         <q-input
           v-model="time"
@@ -32,8 +31,7 @@
           label="Hora"
           class="q-py-md"
           :error="errorTime"
-          :error-message="errorMessageTime"
-          @blur="validateTime"
+          :error-message="errorMessage"
         />
         <div class="q-py-md">
           <q-input
@@ -42,8 +40,7 @@
             type="textarea"
             label="Observaciones"
             :error="errorText"
-            :error-message="errorMessageText"
-            @blur="validateText"
+            :error-message="errorMessage"
           />
         </div>
         <q-btn
@@ -60,9 +57,13 @@
 <script setup>
 import { ref, watch } from "vue";
 import { workpeople } from "src/data/workpeople";
+import { Notify } from "quasar";
 
 const props = defineProps({
-  modelValue: Boolean,
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
   employeeId: {
     type: String,
     required: true,
@@ -80,30 +81,28 @@ const date = ref("");
 const time = ref("");
 const text = ref("");
 const errorDate = ref(false);
-const errorMessageDate = ref("Campo vacío");
 const errorTime = ref(false);
-const errorMessageTime = ref("Campo vacío");
 const errorText = ref(false);
-const errorMessageText = ref("Campo vacío");
+const errorMessage = ref("Campo vacío");
 
-// Funciones de validación individuales para cada campo
-const validateDate = () => {
-  errorDate.value = date.value === "";
+const notifyPositive = () => {
+  Notify.create({
+    type: "positive",
+    message: "Salida ingresada con exito",
+  });
 };
 
-const validateTime = () => {
-  errorTime.value = time.value === "";
-};
-
-const validateText = () => {
-  errorText.value = text.value === "";
-};
+// Funciones de validación campos
+function validateField(value, errorRef) {
+  errorRef.value = value === "";
+  return !errorRef.value;
+}
 
 // Llamada al hacer clic en el botón "Marcar asistencia"
 const onClick = () => {
-  validateDate();
-  validateTime();
-  validateText();
+  validateField(date.value, errorDate);
+  validateField(time.value, errorTime);
+  validateField(text.value, errorText);
 
   if (!errorDate.value && !errorTime.value && !errorText.value) {
     console.log(
@@ -111,11 +110,8 @@ const onClick = () => {
     );
 
     markAsAbsent();
-
-    date.value = "";
-    time.value = "";
-    text.value = "";
     localDialog.value = false;
+    notifyPositive();
   }
 };
 
