@@ -65,11 +65,7 @@ onMounted(() => {
 
 // const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
 
-const iconsNames = [
-  { name: "how_to_reg", function: "asistem" },
-  { name: "exit_to_app", function: "exit" },
-  { name: "info", function: "report" },
-];
+const iconsNames = [{ name: "description", function: "report" }];
 
 const workpeoplesFilter = computed(() => {
   // Filtra a los empleados de cada depto dependiento del parametro recibido en la ruta

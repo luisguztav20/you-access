@@ -42,17 +42,6 @@
       </div>
     </q-item>
 
-    <AsitemDialog
-      v-model="asistem"
-      :employeeId="empleado.id"
-      :employeeName="empleado.name"
-    />
-    <ExitDialog
-      v-model="exit"
-      :employeeId="empleado.id"
-      :employeeName="empleado.name"
-    />
-
     <ReportDialog
       v-model="report"
       :employeeId="empleado.id"
@@ -65,13 +54,10 @@
 
 <script setup>
 import { ref } from "vue";
-import AsitemDialog from "../components/AsistemDialog.vue";
-import ExitDialog from "../components/ExitDialog.vue";
+
 import ReportDialog from "../components/ReportDialog.vue";
 import EditEmployee from "../components/EditEmployee.vue";
 
-const asistem = ref(false);
-const exit = ref(false);
 const report = ref(false);
 const edit = ref(false);
 
@@ -86,20 +72,9 @@ const props = defineProps({
   },
 });
 
-const openDialog = (dialog) => {
-  dialog.value = true;
-};
-
 function Dialog(name) {
-  if (name === "asistem") {
-    openDialog(asistem);
-  }
-
-  if (name === "exit") {
-    openDialog(exit);
-  }
   if (name === "report") {
-    openDialog(report);
+    report.value = true;
   }
   if (name === "edit") {
     edit.value = true;

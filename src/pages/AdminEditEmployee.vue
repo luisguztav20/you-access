@@ -6,11 +6,9 @@
           <div class="row q-my-sm justify-between items-center">
             <div class="column col-md-4">
               <h2 class="text-primary text-h5 text-bold q-mb-none">
-                Empleados
+                Asignar tarjeta de asisitencia
               </h2>
-              <h3 class="text-h6 text-weight-light q-mt-none">
-                Mienbros del deparatamento
-              </h3>
+              <h3 class="text-h6 text-weight-light q-mt-none">trabajadores</h3>
             </div>
             <searchEmployeeInput v-model="nameSearch" />
           </div>
@@ -40,11 +38,9 @@ import CardEmployee from "src/components/CardEmployee.vue";
 
 const workpeoples = ref([]);
 const nameSearch = ref("");
-const ediDialog = ref(false);
-const deleteDialog = ref(false);
 const iconsNames = [
-  { name: "edit", function: "edit", open: () => !ediDialog.value },
-  { name: "delete", function: "delete", open: () => !deleteDialog.value },
+  { name: "credit_card", function: "edit" },
+  { name: "delete", function: "delete" },
 ];
 
 onMounted(() => {

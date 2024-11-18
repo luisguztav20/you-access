@@ -23,6 +23,7 @@
       <div class="flex full-width justify-center q-my-lg">
         <q-btn
           color="primary"
+          rounded
           icon="logout"
           label="Cerrar sesion"
           @click="onClick"
@@ -57,8 +58,8 @@ const linksList = [
     name: "add",
   },
   {
-    title: "Editar empleado",
-    icon: "delete",
+    title: "Asignar tarjeta",
+    icon: "manage_accounts",
     name: "admin/edit-employee",
   },
 ];

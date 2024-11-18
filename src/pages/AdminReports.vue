@@ -1,14 +1,16 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <q-card class="q-pa-lg">
+      <q-card class="q-pa-lg" style="border-radius: 15px">
         <!-- Encabezado -->
-        <div class="text-h5 text-center q-mb-md">GENERAR REPORTE</div>
+        <div class="text-h5 text-center q-mb-md text-primary q-mb-xl">
+          Reporte de asistencia
+        </div>
 
         <!-- Filtros de búsqueda -->
         <div class="q-gutter-md q-mb-md">
           <q-input
-            filled
+            outlined
             label="Fecha inicial"
             type="date"
             v-model="startDate"
@@ -17,7 +19,7 @@
             class="col-xs-12 col-sm-6"
           />
           <q-input
-            filled
+            outlined
             label="Fecha final"
             type="date"
             v-model="endDate"
@@ -26,23 +28,46 @@
             class="col-xs-12 col-sm-6"
           />
           <q-select
-            filled
+            outlined
             label="Departamento"
             v-model="selectedDepartment"
-            :options="departments"
+            :options="departamentOptions"
             :error="selectedDepartmentError"
+            emit-value
             error-message="El departamento es obligatorio"
             class="col-xs-12 col-sm-6"
           />
           <q-btn
+            rounded
             label="Buscar"
             color="primary"
-            class="col-xs-12 col-sm-6 q-mt-md"
+            icon="search"
+            class="q-mt-md"
             @click="validateAndSearch"
+          />
+          <q-btn
+            outline
+            rounded
+            label="generar reporte"
+            icon="picture_as_pdf"
+            color="primary"
+            class="q-mt-md"
+            v-if="stateReports"
+          />
+          <q-btn
+            flat
+            rounded
+            label="limpiar datos"
+            icon="delete"
+            color="primary"
+            class="q-mt-md"
+            @click="clean"
+            v-if="stateReports"
           />
         </div>
 
         <!-- Tabla -->
+        <q-separator class="q-my-lg" />
         <q-table
           :rows="rows"
           :columns="columns"
@@ -50,115 +75,91 @@
           class="q-mt-md"
           flat
           bordered
-        >
-          <template v-slot:body-cell-observacion="props">
-            <!-- Mostrar directamente el texto de la observación -->
-            <div>{{ props.row.observacion }}</div>
-          </template>
-        </q-table>
+          v-if="stateReports"
+        />
       </q-card>
     </div>
   </q-page>
 </template>
 
-<script>
-export default {
-  name: "GenerateReport",
-  data() {
-    return {
-      startDate: null,
-      endDate: null,
-      selectedDepartment: null,
-      startDateError: false,
-      endDateError: false,
-      selectedDepartmentError: false,
-      departments: [
-        "Recursos Humanos",
-        "Finanzas",
-        "Producción",
-        "Ventas",
-        "Marketing",
-      ],
-      rows: [
-        {
-          id: 1,
-          nombre: "Juan Pérez",
-          dias_trabajados: 20,
-          ausencias: 2,
-          horas_extra_dia: 5,
-          horas_extra_noche: 3,
-          observacion: "Observación para Juan Pérez",
-        },
-        {
-          id: 2,
-          nombre: "Ana Gómez",
-          dias_trabajados: 22,
-          ausencias: 1,
-          horas_extra_dia: 8,
-          horas_extra_noche: 2,
-          observacion: "Observación para Ana Gómez",
-        },
-      ],
-      columns: [
-        { name: "id", label: "ID", align: "left", field: "id" },
-        { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-        {
-          name: "dias_trabajados",
-          label: "DÍAS TRABAJADOS",
-          align: "center",
-          field: "dias_trabajados",
-        },
-        {
-          name: "ausencias",
-          label: "AUSENCIAS",
-          align: "center",
-          field: "ausencias",
-        },
-        {
-          name: "horas_extra_dia",
-          label: "HORAS EXTRA DÍA",
-          align: "center",
-          field: "horas_extra_dia",
-        },
-        {
-          name: "horas_extra_noche",
-          label: "HORAS EXTRA NOCHE",
-          align: "center",
-          field: "horas_extra_noche",
-        },
-        {
-          name: "observacion",
-          label: "OBSERVACIÓN",
-          align: "left",
-          field: "observacion",
-        },
-      ],
-    };
-  },
-  methods: {
-    validateAndSearch() {
-      // Reiniciar errores
-      this.startDateError = !this.startDate;
-      this.endDateError = !this.endDate;
-      this.selectedDepartmentError = !this.selectedDepartment;
+<script setup>
+import { ref, onMounted } from "vue";
+import { departaments } from "src/data/departaments";
 
-      // Si no hay errores, ejecutar la lógica de búsqueda
-      if (
-        !this.startDateError &&
-        !this.endDateError &&
-        !this.selectedDepartmentError
-      ) {
-        console.log("Buscando reportes para:", {
-          startDate: this.startDate,
-          endDate: this.endDate,
-          department: this.selectedDepartment,
-        });
-        // Aquí puedes implementar la lógica para filtrar los datos en 'rows'
-      } else {
-        console.warn("Por favor, completa todos los campos antes de buscar.");
-      }
-    },
+// Variables reactivas
+const startDate = ref(null);
+const endDate = ref(null);
+
+const startDateError = ref(false);
+const endDateError = ref(false);
+const selectedDepartmentError = ref(false);
+const selectedDepartment = ref(null);
+
+const departamentOptions = ref([]);
+const stateReports = ref(false);
+
+onMounted(() => {
+  departamentOptions.value = departaments.map((departamento) => ({
+    label: departamento.title,
+    value: departamento.title,
+    key: departamento.name,
+  }));
+});
+
+// Datos de la tabla
+const rows = ref([
+  {
+    id: 1,
+    nombre: "Juan Pérez",
+    fecha: "22/05/2024",
+    entrada: "07:00",
+    salida: "17:00",
   },
+  {
+    id: 2,
+    nombre: "Ana Gómez",
+    fecha: "22/05/2024",
+    entrada: "07:00",
+    salida: "17:00",
+  },
+]);
+
+const columns = ref([
+  { name: "id", label: "ID", align: "left", field: "id" },
+  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
+  { name: "fecha", label: "FECHA", align: "center", field: "fecha" },
+  { name: "entrada", label: "HORA ENTRADA", align: "center", field: "entrada" },
+  { name: "salida", label: "HORA SALIDA", align: "center", field: "salida" },
+]);
+
+function clean() {
+  startDate.value = "";
+  endDate.value = "";
+  selectedDepartment.value = "";
+  stateReports.value = false;
+}
+
+// Función para validar y buscar
+const validateAndSearch = () => {
+  startDateError.value = !startDate.value;
+  endDateError.value = !endDate.value;
+  selectedDepartmentError.value = !selectedDepartment.value;
+
+  if (
+    !startDateError.value &&
+    !endDateError.value &&
+    !selectedDepartmentError.value
+  ) {
+    console.log("Buscando reportes para:", {
+      startDate: startDate.value,
+      endDate: endDate.value,
+      department: selectedDepartment.value,
+    });
+    // Implementar lógica de búsqueda aquí
+    stateReports.value = true;
+  } else {
+    console.warn("Por favor, completa todos los campos antes de buscar.");
+  }
 };
 </script>
 

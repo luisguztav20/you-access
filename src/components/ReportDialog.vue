@@ -1,8 +1,8 @@
 <template>
   <q-dialog v-model="localDialog">
-    <q-card class="full-screen" style="max-width: 1200px; border-radius: 15px">
+    <q-card class="full-screen" style="max-width: 800px; border-radius: 15px">
       <q-card-section class="row items-center q-pb-none">
-        <h2 class="text-h6">Reporte de asientencias</h2>
+        <h2 class="text-h6">Asientencias</h2>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -35,13 +35,26 @@
           class="q-py-md full-width"
           @blur="validateDate"
         />
-        <q-btn
-          color="primary"
-          icon="description"
-          label="Consultar asistencias"
-          class="q-my-md"
-          @click="showReports"
-        />
+
+        <div class="row items-center q-gutter-x-lg">
+          <q-btn
+            color="primary"
+            rounded
+            icon="description"
+            label="Consultar"
+            class="q-my-sm col-11 col-md-3"
+            @click="showReports"
+          />
+          <q-btn
+            outline
+            rounded
+            v-if="stateReport"
+            color="primary"
+            icon="picture_as_pdf"
+            label="Generar reporte"
+            class="col-11 col-md-4"
+          />
+        </div>
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
       <q-card-section v-if="stateReport">
@@ -56,13 +69,6 @@
             virtual-scroll
             v-model:pagination="pagination"
             :rows-per-page-options="[0]"
-          />
-          <q-btn
-            color="primary"
-            icon="picture_as_pdf"
-            label="Generar reporte"
-            class="q-my-md"
-            @click="generarReporte"
           />
         </div>
       </q-card-section>
@@ -139,122 +145,95 @@ const resetFields = () => {
 };
 
 const columns = [
-  { name: "index", label: "#", field: "index" },
   {
     name: "id",
     label: "ID",
     field: (row) => row.name,
     format: (val) => `${val}`,
+    align: "left",
     sortable: true,
   },
-  { name: "nombre", label: "Nombre", field: "nombre" },
-  { name: "fecha", label: "Fecha", field: "fecha" },
-  { name: "entrada", label: "Hora entrada", field: "entrada", sortable: true },
-  { name: "salida", label: "Hora salida", field: "salida", sortable: true },
-  { name: "retraso", label: "Retraso (horas)", field: "retraso" },
-  { name: "extra", label: "Tiempo extra (horas)", field: "extra" },
-  { name: "observacion", label: "Observaciones", field: "observacion" },
+  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
+  { name: "fecha", label: "FECHA", align: "left", field: "fecha" },
+  {
+    name: "entrada",
+    label: "HORA ENTRADA",
+    align: "center",
+    field: "entrada",
+    sortable: true,
+  },
+  {
+    name: "salida",
+    label: "HORA SALIDA",
+    align: "center",
+    field: "salida",
+    sortable: true,
+  },
 ];
 
 const rows = ref([
   {
-    index: 1,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 2,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "2/5/2024",
     entrada: "7:05",
     salida: "17:00",
-    retraso: "0:05",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
   {
-    index: 3,
     name: "ING00124",
     nombre: "Luis Gustavo Alfaro Mendoza",
     fecha: "1/5/2024",
     entrada: "7:00",
     salida: "17:00",
-    retraso: "0:00",
-    extra: "0:00",
-    observacion: "",
   },
 ]);
 

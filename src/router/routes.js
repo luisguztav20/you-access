@@ -2,10 +2,7 @@ const routes = [
   {
     path: "/user",
     component: () => import("src/layouts/UserLayout.vue"),
-    children: [
-      { path: "home", component: () => import("src/pages/UserHome.vue") },
-      { path: "logout", component: () => import("src/pages/UserPerfil.vue") },
-    ],
+    children: [{ path: "", component: () => import("src/pages/UserHome.vue") }],
   },
   {
     path: "/admin",
@@ -16,10 +13,7 @@ const routes = [
         path: "manager/:departamento",
         component: () => import("src/pages/AdminManager.vue"),
       },
-      {
-        path: "logout",
-        component: () => import("src/pages/AdminLogOut.vue"),
-      },
+
       {
         path: "edit-employee",
         component: () => import("src/pages/AdminEditEmployee.vue"),

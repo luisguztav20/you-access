@@ -1,165 +1,197 @@
 <template>
   <div class="row justify-center">
-    <div class="col-12 col-md-6 col-sm-10 col-xs-12 q-pa-sm my-container">
+    <div class="col-11 col-md-10 col-lg-8">
       <h4 class="text-primary text-bold mb-2">Mis asistencias</h4>
 
       <h7 class="text-center my-subtitle">Filtrar asistencias</h7>
 
-      <div class="row q-py-md align-items-center justify-center filter-container">
-        <div class="col-12 col-md-4 q-px-sm q-pb-md">
-          <q-input outlined v-model="text1" label="Inicio" dense size="sm" class="q-pa-xs" />
+      <div class="row items-center">
+        <div class="row items-center col-12 col-md-12">
+          <q-input
+            v-model="date"
+            outlined
+            type="date"
+            label="Fecha inicial"
+            class="q-py-md col-12 col-md-5 q-mr-md"
+            :error="errorDate"
+            :error-message="errorMessageDate"
+            @blur="validateDate"
+          />
+          <q-input
+            v-model="dateEnd"
+            outlined
+            type="date"
+            label="Fecha final"
+            class="q-py-md col-12 col-md-5"
+            @blur="validateDate"
+          />
         </div>
-        <div class="col-12 col-md-4 q-px-sm q-pb-md">
-          <q-input outlined v-model="text2" label="Fin" dense size="sm" class="q-pa-xs" />
-        </div>
-        <div class="col-12 col-md-4 q-px-sm q-pb-md">
-          <q-btn class="q-pa-xs search-button" label="Buscar" />
-        </div>
+
+        <q-btn
+          color="primary"
+          rounded
+          icon="description"
+          label="Consultar"
+          class="q-my-md col-12 col-sm-4 col-md-3 q-mr-md"
+          @click="showReports"
+        />
+        <q-btn
+          v-if="stateReport"
+          outline
+          color="primary"
+          rounded
+          label="limpar datos"
+          class="q-my-md col-12 col-sm-4 col-md-3"
+          @click="clear"
+        />
       </div>
 
-      <q-card class="my-card q-px-lg q-py-lg" flat bordered>
-        <q-card-section>
-          <div class="text-h5 text-primary text-bold">Tabla de asistencias</div>
-        </q-card-section>
-        <q-separator />
-
-        <div class="table-container">
-          <q-markup-table class="q-py-md q-px-lg my-table">
-            <thead>
-              <tr>
-                <th class="text-left">Index</th>
-                <th class="text-right">Dessert</th>
-                <th class="text-right">Calories</th>
-                <th class="text-right">Fat</th>
-                <th class="text-right">Carbs</th>
-                <th class="text-right">Protein</th>
-                <th class="text-right">Sodium</th>
-                <th class="text-right">Calcium %</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in items" :key="index">
-                <td class="text-left">{{ index + 1 }}</td>
-                <td class="text-right">{{ item.dessert }}</td>
-                <td class="text-right">{{ item.calories }}</td>
-                <td class="text-right">{{ item.fat }}</td>
-                <td class="text-right">{{ item.carbs }}</td>
-                <td class="text-right">{{ item.protein }}</td>
-                <td class="text-right">{{ item.sodium }}</td>
-                <td class="text-right">{{ item.calcium }}</td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </div>
-      </q-card>
+      <div v-if="stateReport">
+        <q-separator class="q-mt-md" />
+        <q-card class="my-card col-12 q-my-md" flat bordered>
+          <q-card-section>
+            <q-table
+              style="max-height: 400px"
+              flat
+              bordered
+              :rows="rows"
+              :columns="columns"
+              row-key="index"
+              virtual-scroll
+              v-model:pagination="pagination"
+              :rows-per-page-options="[0]"
+            />
+          </q-card-section>
+          <q-separator />
+        </q-card>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+const date = ref("");
+const dateEnd = ref("");
+const errorDate = ref(false);
+const errorMessageDate = ref("Campo vacío");
+const stateReport = ref(false);
 
-// Variables reactivas para los campos de filtro
-const text1 = ref('');
-const text2 = ref('');
+// Funciones de validación
+const validateDate = () => {
+  errorDate.value = date.value === "";
+};
+// Llamada al hacer clic en el botón "Marcar asistencia"
+const showReports = () => {
+  validateDate();
+  if (!errorDate.value) {
+    //Funciones cuando no hay campos vacios
 
-// Datos de ejemplo para la tabla
-const items = ref([
-  { dessert: 'Ejemplo 1', calories: 200, fat: 10, carbs: 25, protein: 5, sodium: 60, calcium: 15 },
-  { dessert: 'Ejemplo 2', calories: 300, fat: 15, carbs: 40, protein: 6, sodium: 100, calcium: 10 },
-  { dessert: 'Ejemplo 3', calories: 300, fat: 15, carbs: 40, protein: 6, sodium: 100, calcium: 10 },
+    stateReport.value = true;
+  }
+};
+
+function clear() {
+  stateReport.value = false;
+  date.value = "";
+  dateEnd.value = "";
+}
+const columns = [
+  {
+    name: "id",
+    label: "ID",
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    align: "left",
+    sortable: true,
+  },
+  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
+  { name: "fecha", label: "FECHA", align: "left", field: "fecha" },
+  {
+    name: "entrada",
+    label: "HORA ENTRADA",
+    align: "center",
+    field: "entrada",
+    sortable: true,
+  },
+  {
+    name: "salida",
+    label: "HORA SALIDA",
+    align: "center",
+    field: "salida",
+    sortable: true,
+  },
+];
+
+const rows = ref([
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "2/5/2024",
+    entrada: "7:05",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
+  {
+    name: "ING00124",
+    nombre: "Luis Gustavo Alfaro Mendoza",
+    fecha: "1/5/2024",
+    entrada: "7:00",
+    salida: "17:00",
+  },
 ]);
+
+const pagination = ref({
+  rowsPerPage: 0, // Todas las filas visibles
+});
 </script>
 
-<style scoped>
-.my-container {
-  max-width: 600px;
-  width: 50%;
-}
-
-.my-subtitle {
-  font-size: 16px;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.my-card {
-  border: 2px solid #055dc9;
-  padding: 10px;
-  margin: 0 15px;
-}
-
-.my-table {
-  color: #055dc9;
-  border-radius: 10px;
-  overflow: hidden;
-  font-size: 14px;
-  margin: 0 10px;
-}
-
-@media (min-width: 900px) {
-  .search-button {
-    font-size: 14px;
-    padding: 10px 6px;
-    width: 100%;
-    background-color: #e0e0e0;
-    color: #055dc9;
-  }
-
-  .filter-container {
-    flex-direction: row;
-  }
-
-  .my-table th {
-    background-color: #e0e0e0;
-    color: #055dc9;
-  }
-
-
-  .table-container {
-    overflow: visible;
-  }
-
-  .my-table {
-    min-width: auto;
-  }
-}
-
-@media (max-width: 899px) {
-  .my-container {
-    width: 90%;
-    margin: 0 auto;
-  }
-
-  .filter-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .filter-container > div {
-    width: 100%;
-  }
-
-  .search-button {
-    font-size: 14px;
-    padding: 8px 16px;
-    width: 100%;
-    background-color: #e0e0e0;
-    color: #055dc9;
-  }
-
-  .my-table th {
-    background-color: #e0e0e0;
-    color: #055dc9;
-  }
-
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .my-table {
-    min-width: 800px;
-  }
-}
-</style>
+<style scoped></style>

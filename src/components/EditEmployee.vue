@@ -31,6 +31,7 @@
         />
         <q-btn
           color="primary"
+          rounded
           label="Guardar cambios"
           class="q-my-md full-width"
           @click="saveChanges"
