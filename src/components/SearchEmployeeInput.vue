@@ -6,9 +6,8 @@
       label="Buscar empleado"
       class="full-width q-pr-sm"
       outlined
-      rounded
     >
-      <template v-slot:prepend>
+      <template v-slot:append>
         <q-icon name="search" />
       </template>
     </q-input>

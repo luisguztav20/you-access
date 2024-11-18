@@ -9,7 +9,7 @@
                 {{ nameDepartament }}
               </h2>
               <h3 class="text-h6 text-weight-light q-mt-none">
-                Mienbros del deparatamento
+                Mienbros del departamento
               </h3>
             </div>
             <searchEmployeeInput v-model="nameSearch" />
@@ -54,7 +54,6 @@ const nameSearch = ref("");
 const departament = ref([]);
 const nameDepartament = ref();
 const keyDepartament = ref();
-const checkAsistem = ref(false);
 
 onMounted(() => {
   departamentId.value = ruta.params.departamento; // Recibe el id del departamento mediante la ruta
@@ -64,7 +63,13 @@ onMounted(() => {
   keyDepartament.value = searchDepartament.value[0].name; // extrae la key para identicar el depto
 });
 
-const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
+// const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
+
+const iconsNames = [
+  { name: "how_to_reg", function: "asistem" },
+  { name: "exit_to_app", function: "exit" },
+  { name: "info", function: "report" },
+];
 
 const workpeoplesFilter = computed(() => {
   // Filtra a los empleados de cada depto dependiento del parametro recibido en la ruta

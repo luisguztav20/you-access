@@ -4,7 +4,7 @@ export const workpeople = [
     name: "Luis Gustavo Alfaro Mendoza",
     departament: "ingenieria",
     position: "Web developer",
-    current: true,
+    current: false,
   },
   {
     id: "ING000224",

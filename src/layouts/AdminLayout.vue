@@ -49,7 +49,7 @@ const linksList = [
   {
     title: "Generar reportes",
     icon: "description",
-    name: "reports",
+    name: "admin/reports",
   },
   {
     title: "Agregar empleado",
@@ -59,7 +59,7 @@ const linksList = [
   {
     title: "Editar empleado",
     icon: "delete",
-    name: "delete",
+    name: "admin/edit-employee",
   },
 ];
 

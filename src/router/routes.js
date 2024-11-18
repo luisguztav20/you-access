@@ -20,6 +20,14 @@ const routes = [
         path: "logout",
         component: () => import("src/pages/AdminLogOut.vue"),
       },
+      {
+        path: "edit-employee",
+        component: () => import("src/pages/AdminEditEmployee.vue"),
+      },
+      {
+        path: "reports",
+        component: () => import("src/pages/AdminReports.vue"),
+      },
     ],
   },
   {

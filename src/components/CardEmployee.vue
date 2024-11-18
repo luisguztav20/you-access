@@ -31,33 +31,19 @@
         <q-separator />
         <q-card-actions class="q-pa-none row full-width justify-center q-mt-sm">
           <q-btn
-            v-for="(iconName, indice) in iconsNames"
-            :key="indice"
+            v-for="iconName in iconsNames"
+            :key="iconName.function"
             flat
-            :icon="iconName"
+            :icon="iconName.name"
             color="primary"
-            @click="openDialog(indice)"
+            @click="Dialog(iconName.function)"
           />
         </q-card-actions>
       </div>
     </q-item>
 
-    <!-- <q-dialog v-model="asitemDialog">
-      <q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Marcar asistencia</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-
-        <q-card-section>
-          <p>{{ empleado.id }}</p>
-          <p>{{ empleado.name }}</p>
-        </q-card-section>
-      </q-card>
-    </q-dialog> -->
     <AsitemDialog
-      v-model="asitem"
+      v-model="asistem"
       :employeeId="empleado.id"
       :employeeName="empleado.name"
     />
@@ -72,6 +58,8 @@
       :employeeId="empleado.id"
       :employeeName="empleado.name"
     />
+
+    <EditEmployee v-model="edit" :employee="empleado" />
   </q-card>
 </template>
 
@@ -80,10 +68,12 @@ import { ref } from "vue";
 import AsitemDialog from "../components/AsistemDialog.vue";
 import ExitDialog from "../components/ExitDialog.vue";
 import ReportDialog from "../components/ReportDialog.vue";
+import EditEmployee from "../components/EditEmployee.vue";
 
-const asitem = ref(false);
+const asistem = ref(false);
 const exit = ref(false);
 const report = ref(false);
+const edit = ref(false);
 
 const props = defineProps({
   empleado: {
@@ -91,21 +81,36 @@ const props = defineProps({
     require: true,
   },
   iconsNames: {
-    type: Array,
+    type: Object,
     required: true,
   },
 });
 
-function openDialog(indice) {
-  if (indice === 0) {
-    asitem.value = true;
+const openDialog = (dialog) => {
+  dialog.value = true;
+};
+
+function Dialog(name) {
+  if (name === "asistem") {
+    openDialog(asistem);
   }
 
-  if (indice === 1) {
-    exit.value = true;
+  if (name === "exit") {
+    openDialog(exit);
   }
-  if (indice === 2) {
-    report.value = true;
+  if (name === "report") {
+    openDialog(report);
+  }
+  if (name === "edit") {
+    edit.value = true;
+  }
+  if (name == "delete") {
+    console.log(
+      "empledao : " +
+        props.empleado.name +
+        " eliminado ID: " +
+        props.empleado.id
+    );
   }
 }
 </script>
