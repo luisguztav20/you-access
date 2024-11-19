@@ -71,6 +71,7 @@
 import { ref } from "vue";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
+import { Notify } from "quasar";
 import { onMounted } from "vue";
 
 const router = useRouter();
@@ -97,9 +98,35 @@ const onLogin = async () => {
     }
     console.log(response.data);
   } catch (error) {
-    // Manejar el error
-    console.error(error);
+    if (error.response.status === 404) {
+      Notify.create({
+        message: "Usuario no encontrado",
+        color: "negative",
+        position: "top",
+      });
+    } else if (error.response.status === 401) {
+      Notify.create({
+        message: "Creedenciales incorrectas",
+        color: "negative",
+        position: "top",
+      });
+    } else {
+      Notify.create({
+        message: "Error al iniciar sesión",
+        color: "negative",
+        position: "top",
+      });
+      console.error(error);
+    }
   }
+};
+
+const positiveNotify = (message) => {
+  Notify.create({
+    message: message,
+    color: "positive",
+    position: "top",
+  });
 };
 
 const onForgotPassword = () => {
