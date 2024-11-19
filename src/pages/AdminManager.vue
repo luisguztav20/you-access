@@ -46,7 +46,7 @@ import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
 import { api } from "src/boot/axios";
 
-const ruta = useRoute();
+const route = useRoute();
 const departamentId = ref("");
 const workpeoples = ref([]);
 const nameSearch = ref("");
@@ -55,7 +55,7 @@ const nameDepartament = ref();
 const keyDepartament = ref();
 
 onMounted(() => {
-  departamentId.value = ruta.params.id; // Recibe el id del departamento mediante la ruta
+  departamentId.value = route.params.id; // Recibe el id del departamento mediante la ruta
   // workpeoples.value = workpeople; // Almacenamos la data de los trabajadores en local
   // departament.value = departaments; // Almacena la data de los departamentos en local
   // nameDepartament.value = searchDepartament.value[0].title; //extrae el nombre del departamento
@@ -113,10 +113,6 @@ const searchEmployee = computed(() => {
   return workpeoplesFilter.value.filter((empleado) => {
     const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
     return (
-      empleado.name.toLowerCase().includes(nameSearch.value.toLowerCase()) ||
-      empleado.lastName
-        .toLowerCase()
-        .includes(nameSearch.value.toLowerCase()) ||
       fullName.includes(nameSearch.value.toLowerCase())
     );
   });

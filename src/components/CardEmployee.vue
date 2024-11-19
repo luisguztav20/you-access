@@ -1,8 +1,11 @@
 <template>
-  <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
     <q-card class="card-mod" flat bordered>
       <q-item>
-        <q-item-section avatar class="column justify-center items-center q-mr-md">
+        <q-item-section
+          avatar
+          class="column justify-center items-center q-mr-md"
+        >
           <q-avatar>
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
@@ -21,13 +24,17 @@
 
         <q-separator vertical />
 
-        <div style="width: 100%;">
+        <div style="width: 100%">
           <q-item-section horizontal class="q-ma-md">
-            <q-item-label caption class="">
+            <q-item-label caption class="text-bold">
               {{ empleado.name }} {{ empleado.lastName }}</q-item-label
             >
             <q-item-label caption>
-              Cargo: {{ empleado.position }}
+              <span class="text-bold">Correo:</span>
+              {{ empleado.email }}</q-item-label
+            >
+            <q-item-label caption>
+              <span class="text-bold">Cargo:</span> {{ empleado.position }}
             </q-item-label>
           </q-item-section>
           <q-separator />
