@@ -22,6 +22,10 @@ const routes = [
         path: "reports",
         component: () => import("src/pages/AdminReports.vue"),
       },
+      {
+        path: "add-employee",
+        component: () => import("src/pages/AdminAddEmployee.vue"),
+      },
     ],
   },
   {

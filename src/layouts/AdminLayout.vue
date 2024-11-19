@@ -55,7 +55,7 @@ const linksList = [
   {
     title: "Agregar empleado",
     icon: "add",
-    name: "add",
+    name: "admin/add-employee",
   },
   {
     title: "Asignar tarjeta",

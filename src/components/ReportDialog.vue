@@ -11,50 +11,62 @@
         class="column justify-between items-start q-pb-none q-px-lg"
       >
         <h3 class="text-h6 q-ma-none text-primary">ID: {{ employeeId }}</h3>
-        <h4 class="text-h6 q-ma-none text-primary">
+        <h3 class="text-h6 q-ma-none text-primary">
           {{ employeeName }}
-        </h4>
+        </h3>
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
       <q-card-section class="q-px-lg">
-        <q-input
-          v-model="date"
-          outlined
-          type="date"
-          label="Fecha inicial"
-          class="q-py-md full-width"
-          :error="errorDate"
-          :error-message="errorMessageDate"
-          @blur="validateDate"
-        />
-        <q-input
-          v-model="dateEnd"
-          outlined
-          type="date"
-          label="Fecha final"
-          class="q-py-md full-width"
-          @blur="validateDate"
-        />
+        <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+          <q-input
+            v-model="date"
+            outlined
+            type="date"
+            label="Fecha inicial"
+            class="q-py-md full-width"
+            :rules="[
+              (val) =>
+                (val !== null && val !== '') || 'Ingrese una fecha inicial',
+            ]"
+          />
+          <q-input
+            v-model="dateEnd"
+            outlined
+            type="date"
+            label="Fecha final"
+            class="q-py-md full-width"
+          />
 
-        <div class="row items-center q-gutter-x-lg">
-          <q-btn
-            color="primary"
-            rounded
-            icon="description"
-            label="Consultar"
-            class="q-my-sm col-11 col-md-3"
-            @click="showReports"
-          />
-          <q-btn
-            outline
-            rounded
-            v-if="stateReport"
-            color="primary"
-            icon="picture_as_pdf"
-            label="Generar reporte"
-            class="col-11 col-md-4"
-          />
-        </div>
+          <div class="row items-center q-gutter-x-lg">
+            <q-btn
+              color="primary"
+              rounded
+              icon="description"
+              label="Consultar"
+              class="q-my-sm col-11 col-md-3"
+              type="submit"
+            />
+            <q-btn
+              outline
+              rounded
+              v-if="stateReport"
+              color="primary"
+              icon="picture_as_pdf"
+              label="Generar reporte"
+              class="col-11 col-md-3"
+            />
+            <q-btn
+              flat
+              rounded
+              v-if="stateReport"
+              color="primary"
+              icon="delete"
+              label="Limpiar datos"
+              type="reset"
+              class="col-11 col-md-3"
+            />
+          </div>
+        </q-form>
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
       <q-card-section v-if="stateReport">
@@ -77,6 +89,8 @@
 </template>
 
 <script setup>
+import { Notify } from "quasar"; // Importar Notify de Quasar
+
 import { ref, watch } from "vue";
 
 const props = defineProps({
@@ -96,37 +110,31 @@ const localDialog = ref(props.modelValue);
 
 const date = ref("");
 const dateEnd = ref("");
-const errorDate = ref(false);
-const errorMessageDate = ref("Campo vacío");
 const stateReport = ref(false);
 
-// Funciones de validación
-const validateDate = () => {
-  errorDate.value = date.value === "";
+const notifyPosivite = (message) => {
+  Notify.create({
+    message: message,
+    type: "positive",
+    position: "bottom",
+    timeout: 2000,
+  });
 };
 
-// Llamada al hacer clic en el botón "Marcar asistencia"
-const showReports = () => {
-  validateDate();
-  if (!errorDate.value) {
-    //Funciones cuando no hay campos vacios
-
-    stateReport.value = true;
-  }
+const onSubmit = () => {
+  notifyPosivite("Datos enviados");
+  stateReport.value = true;
 };
 
-function generarReporte() {
-  console.log("Reporte generado ");
-}
+const onReset = () => {
+  date.value = null;
+  dateEnd.value = null;
+  stateReport.value = false;
+};
 
 // Emitir el evento para actualizar el valor en el componente padre
 watch(localDialog, (newValue) => {
   emit("update:modelValue", newValue);
-
-  // Reinicia los valores de los inputs si el diálogo se cierra
-  if (!newValue) {
-    resetFields();
-  }
 });
 
 // Sincronizar cambios cuando la prop `modelValue` cambie desde el padre
@@ -136,13 +144,6 @@ watch(
     localDialog.value = newValue;
   }
 );
-
-// Función para reiniciar los valores de los inputs
-const resetFields = () => {
-  date.value = "";
-  errorDate.value = false;
-  stateReport.value = false;
-};
 
 const columns = [
   {

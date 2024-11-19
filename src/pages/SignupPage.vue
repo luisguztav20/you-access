@@ -65,8 +65,17 @@
         <q-btn
           label="Crear cuenta"
           color="primary"
+          rounded
           type="submit"
           class="full-width q-mt-md"
+        />
+
+        <q-btn
+          label="Iniciar sesion"
+          rounded
+          class="full-width q-mt-md google-btn"
+          to="/login"
+          flat
         />
       </q-form>
     </div>

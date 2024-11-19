@@ -1,4 +1,10 @@
 <template>
+  <nav>
+    <q-toolbar class="row justify-center col-1">
+      <img src="/src/assets/you-access-logo-01.svg" style="width: 125px" />
+    </q-toolbar>
+  </nav>
+
   <div class="login-page flex flex-center">
     <div class="login-container q-pa-md q-mt-xl">
       <div class="text-h4 text-primary text-center font-bold">
@@ -40,11 +46,17 @@
         <q-btn
           label="Iniciar sesión"
           color="primary"
+          rounded
           type="submit"
           class="full-width q-mt-sm"
         />
       </q-form>
-
+      <q-btn
+        label="Crear cuenta"
+        class="full-width q-mt-md google-btn"
+        to="/signup"
+        flat
+      />
       <q-btn
         label="Iniciar con Google"
         class="full-width q-mt-md google-btn"

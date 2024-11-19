@@ -12,14 +12,14 @@
           <q-separator />
         </div>
       </div>
-        <div class="row q-col-gutter-sm q-my-md">
-          <CardDepartaments
-            v-for="(departamento, key) in departamentos"
-            :key="departamento._id"
-            :departamento="departamento"
-            @redireccion="redireccion(departamento.name, key)"
-          />
-        </div>
+      <div class="row justify-center q-my-md col-11">
+        <CardDepartaments
+          v-for="(departamento, key) in departamentos"
+          :key="departamento._id"
+          :departamento="departamento"
+          @redireccion="redireccion(departamento.name, key)"
+        />
+      </div>
     </section>
   </q-page>
 </template>
@@ -35,18 +35,18 @@ const departamentos = ref([]);
 const router = useRouter();
 
 onMounted(() => {
-  api
-    .get("/api/department", {
-      withCredentials: true,
-    })
-    .then((response) => {
-      departamentos.value = response.data;
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  // departamentos.value = departaments;
+  api;
+  // .get("/api/department", {
+  //   withCredentials: true,
+  // })
+  // .then((response) => {
+  //   departamentos.value = response.data;
+  //   console.log(response.data);
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // });
+  departamentos.value = departaments;
 });
 
 function redireccion(nombre) {

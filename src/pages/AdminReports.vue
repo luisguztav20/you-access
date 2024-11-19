@@ -8,14 +8,16 @@
         </div>
 
         <!-- Filtros de búsqueda -->
-        <div class="q-gutter-md q-mb-md">
+        <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
           <q-input
             outlined
             label="Fecha inicial"
             type="date"
             v-model="startDate"
-            :error="startDateError"
-            error-message="La fecha inicial es obligatoria"
+            :rules="[
+              (val) =>
+                (val !== null && val !== '') || 'Ingrese una fecha inicial',
+            ]"
             class="col-xs-12 col-sm-6"
           />
           <q-input
@@ -23,8 +25,10 @@
             label="Fecha final"
             type="date"
             v-model="endDate"
-            :error="endDateError"
-            error-message="La fecha final es obligatoria"
+            :rules="[
+              (val) =>
+                (val !== null && val !== '') || 'Ingrese una fecha final',
+            ]"
             class="col-xs-12 col-sm-6"
           />
           <q-select
@@ -32,13 +36,15 @@
             label="Departamento"
             v-model="selectedDepartment"
             :options="departamentOptions"
-            :error="selectedDepartmentError"
-            emit-value
-            error-message="El departamento es obligatorio"
+            :rules="[
+              (val) =>
+                (val !== null && val !== '') || 'Seleccione un departamento',
+            ]"
             class="col-xs-12 col-sm-6"
           />
           <q-btn
             rounded
+            type="submint"
             label="Buscar"
             color="primary"
             icon="search"
@@ -57,6 +63,7 @@
           <q-btn
             flat
             rounded
+            type="reset"
             label="limpiar datos"
             icon="delete"
             color="primary"
@@ -64,7 +71,7 @@
             @click="clean"
             v-if="stateReports"
           />
-        </div>
+        </q-form>
 
         <!-- Tabla -->
         <q-separator class="q-my-lg" />
@@ -89,13 +96,8 @@ import { departaments } from "src/data/departaments";
 // Variables reactivas
 const startDate = ref(null);
 const endDate = ref(null);
-
-const startDateError = ref(false);
-const endDateError = ref(false);
-const selectedDepartmentError = ref(false);
-const selectedDepartment = ref(null);
-
-const departamentOptions = ref([]);
+const selectedDepartment = ref(null); //v-model
+const departamentOptions = ref([]); // lista de departamentos
 const stateReports = ref(false);
 
 onMounted(() => {
@@ -105,6 +107,17 @@ onMounted(() => {
     key: departamento.name,
   }));
 });
+
+const onSubmit = () => {
+  stateReports.value = true;
+};
+
+const onReset = () => {
+  startDate.value = "";
+  endDate.value = "";
+  selectedDepartment.value = "";
+  stateReports.value = false;
+};
 
 // Datos de la tabla
 const rows = ref([
@@ -131,36 +144,6 @@ const columns = ref([
   { name: "entrada", label: "HORA ENTRADA", align: "center", field: "entrada" },
   { name: "salida", label: "HORA SALIDA", align: "center", field: "salida" },
 ]);
-
-function clean() {
-  startDate.value = "";
-  endDate.value = "";
-  selectedDepartment.value = "";
-  stateReports.value = false;
-}
-
-// Función para validar y buscar
-const validateAndSearch = () => {
-  startDateError.value = !startDate.value;
-  endDateError.value = !endDate.value;
-  selectedDepartmentError.value = !selectedDepartment.value;
-
-  if (
-    !startDateError.value &&
-    !endDateError.value &&
-    !selectedDepartmentError.value
-  ) {
-    console.log("Buscando reportes para:", {
-      startDate: startDate.value,
-      endDate: endDate.value,
-      department: selectedDepartment.value,
-    });
-    // Implementar lógica de búsqueda aquí
-    stateReports.value = true;
-  } else {
-    console.warn("Por favor, completa todos los campos antes de buscar.");
-  }
-};
 </script>
 
 <style scoped>
