@@ -7,7 +7,7 @@
         <h3 class="text-subtitle1 q-ma-none q-pb-md text-weight-bold">
           {{ departamento.name }}
         </h3>
-        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+        <p style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
           Descripcion:
           <span class="text-grey-7">
             {{ departamento.description }}

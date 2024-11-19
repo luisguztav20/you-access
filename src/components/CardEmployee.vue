@@ -1,23 +1,20 @@
 <template>
-  <div class="col-12 col-sm-6 col-md-4">
+  <div class="col-12 col-sm-6 col-md-6 col-lg-3">
     <q-card class="card-mod" flat bordered>
       <q-item>
-        <q-item-section avatar class="column justify-center items-center">
+        <q-item-section avatar class="column justify-center items-center q-mr-md">
           <q-avatar>
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
-          <q-item-label class="text-primary q-mt-md q-pr-sm">{{
-            empleado.id
-          }}</q-item-label>
           <q-badge
             v-if="empleado.isPresent"
             rounded
             color="green"
-            class="q-mt-sm"
+            class="q-mt-md"
           >
             Presente
           </q-badge>
-          <q-badge v-else rounded color="red" class="q-mt-sm">
+          <q-badge v-else rounded color="red" class="q-mt-md">
             Ausente
           </q-badge>
         </q-item-section>
