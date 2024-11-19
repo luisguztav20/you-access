@@ -10,9 +10,9 @@
       <q-card-section
         class="column justify-between items-start q-pb-none q-px-lg"
       >
-        <h3 class="text-h6 q-ma-none text-primary">ID: {{ employeeId }}</h3>
+        <h3 class="text-h6 q-ma-none text-primary">ID: {{ employee._id }}</h3>
         <h3 class="text-h6 q-ma-none text-primary">
-          {{ employeeName }}
+          {{ employee.name }} {{ employee.lastName }}
         </h3>
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
@@ -95,12 +95,8 @@ import { ref, watch } from "vue";
 
 const props = defineProps({
   modelValue: Boolean,
-  employeeId: {
-    type: String,
-    required: true,
-  },
-  employeeName: {
-    type: String,
+  employee: {
+    type: Object,
     required: true,
   },
 });

@@ -6,7 +6,7 @@
           <div class="row q-my-sm justify-between items-center">
             <div class="column col-md-4">
               <h2 class="text-primary text-h5 text-bold q-mb-none">
-                {{ nameDepartament }}
+                {{ departament.name }}
               </h2>
               <h3 class="text-h6 text-weight-light q-mt-none">
                 Mienbros del departamento
@@ -24,15 +24,13 @@
         </div>
       </div>
 
-      <div class="row justify-center q-my-lg">
-        <div class="row col-11 justify-center">
-          <CardEmployee
-            v-for="(employee, id) in searchEmployee"
-            :key="id"
-            :empleado="employee"
-            :iconsNames="iconsNames"
-          />
-        </div>
+      <div class="row q-col-gutter-md q-py-md q-px-xl">
+        <CardEmployee
+          v-for="(employee, id) in searchEmployee"
+          :key="id"
+          :empleado="employee"
+          :iconsNames="iconsNames"
+        />
       </div>
     </section>
   </q-page>
@@ -46,6 +44,7 @@ import CardEmployee from "../components/CardEmployee.vue";
 import { departaments } from "src/data/departaments";
 import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
+import { api } from "src/boot/axios";
 
 const ruta = useRoute();
 const departamentId = ref("");
@@ -56,11 +55,25 @@ const nameDepartament = ref();
 const keyDepartament = ref();
 
 onMounted(() => {
-  departamentId.value = ruta.params.departamento; // Recibe el id del departamento mediante la ruta
-  workpeoples.value = workpeople; // Almacenamos la data de los trabajadores en local
-  departament.value = departaments; // Almacena la data de los departamentos en local
-  nameDepartament.value = searchDepartament.value[0].title; //extrae el nombre del departamento
-  keyDepartament.value = searchDepartament.value[0].name; // extrae la key para identicar el depto
+  departamentId.value = ruta.params.id; // Recibe el id del departamento mediante la ruta
+  // workpeoples.value = workpeople; // Almacenamos la data de los trabajadores en local
+  // departament.value = departaments; // Almacena la data de los departamentos en local
+  // nameDepartament.value = searchDepartament.value[0].title; //extrae el nombre del departamento
+  // keyDepartament.value = searchDepartament.value[0].name; // extrae la key para identicar el depto
+
+  api
+    .get(`/api/department/${departamentId.value}`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      departament.value = response.data;
+      workpeoples.value = response.data.employees;
+      console.log(response.data);
+      console.log(`Empleados en ${departament.value.name}:`, workpeoples.value);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 // const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
@@ -80,7 +93,7 @@ const presents = computed(() => {
   // Hace un conteo de los trabajadores presentes
   let count = 0;
   workpeoplesFilter.value.forEach((item) => {
-    if (item.current) {
+    if (item.isPresent) {
       return count++;
     }
   });
@@ -95,11 +108,18 @@ const totalWorkPeople = computed(() => {
 });
 
 const searchEmployee = computed(() => {
-  //Busca un empleado por su id
+  // Busca un empleado por su nombre completo (nombre y apellido)
   if (!nameSearch.value) return workpeoplesFilter.value;
-  return workpeoplesFilter.value.filter((empleado) =>
-    empleado.id.toLowerCase().includes(nameSearch.value.toLowerCase())
-  );
+  return workpeoplesFilter.value.filter((empleado) => {
+    const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
+    return (
+      empleado.name.toLowerCase().includes(nameSearch.value.toLowerCase()) ||
+      empleado.lastName
+        .toLowerCase()
+        .includes(nameSearch.value.toLowerCase()) ||
+      fullName.includes(nameSearch.value.toLowerCase())
+    );
+  });
 });
 
 const searchDepartament = computed(() => {

@@ -10,7 +10,7 @@ const routes = [
     children: [
       { path: "", component: () => import("src/pages/AdminHome.vue") },
       {
-        path: "manager/:departamento",
+        path: "manager/:id",
         component: () => import("src/pages/AdminManager.vue"),
       },
 
