@@ -131,6 +131,10 @@ async function onSignup() {
     clearFields();
     router.push("/user");
     if (response.status === 201) {
+      const token = response.data.token;
+      Cookies.set("x-token", token, {
+        expires: 7,
+      });
       this.$router.push("/user");
     }
   } catch (error) {

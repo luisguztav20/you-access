@@ -73,6 +73,7 @@ import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { Notify } from "quasar";
 import { onMounted } from "vue";
+import Cookies from "js-cookie";
 
 const router = useRouter();
 
@@ -81,20 +82,17 @@ const password = ref("");
 
 const onLogin = async () => {
   try {
-    const response = await api.post(
-      "api/auth/login",
-      {
-        email: email.value,
-        password: password.value,
-      },
-      {
-        withCredentials: true,
-      }
-    );
-    if (response.data.message === "Admin logged in successfully") {
-      router.push("/admin");
-    } else {
+    const response = await api.post("api/auth/login", {
+      email: email.value,
+      password: password.value,
+    });
+    if (response.status === 200) {
+      Cookies.set("x-token", response.data.token, { expires: 7 });
+    }
+    if (response.data.message === "User logged in successfully") {
       router.push("/user");
+    } else if (response.data.message === "Admin logged in successfully") {
+      router.push("/admin");
     }
     console.log(response.data);
   } catch (error) {
