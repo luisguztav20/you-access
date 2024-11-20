@@ -26,7 +26,7 @@
           rounded
           icon="logout"
           label="Cerrar sesion"
-          @click="onClick"
+          @click="logout"
         />
       </div>
     </q-drawer>
@@ -40,6 +40,12 @@
 <script setup>
 import { ref } from "vue";
 import AdminManagerBar from "../components/AdminMangerBar.vue";
+
+import { useRouter } from "vue-router";
+import { Cookies } from "quasar";
+import { Notify } from "quasar";
+
+const router = useRouter();
 
 const linksList = [
   {
@@ -65,6 +71,16 @@ const linksList = [
 ];
 
 const leftDrawerOpen = ref(false);
+
+function logout() {
+  Cookies.remove("x-token");
+  Notify.create({
+    message: "Sesion cerrada con exito",
+    color: "primary",
+    position: "top",
+  });
+  router.push("/");
+}
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;

@@ -67,7 +67,7 @@
             rounded
             icon="logout"
             label="Cerrar sesion"
-            @click="onClick"
+            @click="logout"
           />
         </div>
       </q-scroll-area>
@@ -95,6 +95,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { workpeople } from "src/data/workpeople";
+import { useRouter } from "vue-router";
+import { Cookies } from "quasar";
+import { Notify } from "quasar";
+
+const router = useRouter();
 
 onMounted(() => {
   employee.value = workpeople;
@@ -103,4 +108,14 @@ onMounted(() => {
 const employee = ref(null);
 
 const drawer = ref(false);
+
+function logout() {
+  Cookies.remove("x-token");
+  Notify.create({
+    message: "Sesion cerrada con exito",
+    color: "primary",
+    position: "top",
+  });
+  router.push("/");
+}
 </script>

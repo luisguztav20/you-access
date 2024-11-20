@@ -119,12 +119,8 @@ const onLogin = async () => {
   }
 };
 
-const positiveNotify = (message) => {
-  Notify.create({
-    message: message,
-    color: "positive",
-    position: "top",
-  });
+const onGoogleLogin = () => {
+  console.log("Inicio con google");
 };
 
 const onForgotPassword = () => {

@@ -49,7 +49,7 @@ onMounted(() => {
     });
   // departamentos.value = departaments;
 
-  getRoleFromToken();
+  console.log(getRoleFromToken());
 });
 
 function redireccion(nombre) {

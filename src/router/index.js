@@ -1,6 +1,12 @@
-import { route } from 'quasar/wrappers'
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
-import routes from './routes'
+import { route } from "quasar/wrappers";
+import {
+  createRouter,
+  createMemoryHistory,
+  createWebHistory,
+  createWebHashHistory,
+} from "vue-router";
+import routes from "./routes";
+import { getRoleFromToken } from "../utils/tokenUtils";
 
 /*
  * If not building with SSR mode, you can
@@ -14,17 +20,30 @@ import routes from './routes'
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
+    : process.env.VUE_ROUTER_MODE === "history"
+    ? createWebHistory
+    : createWebHashHistory;
 
   const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    routes,
+    history: createWebHistory(),
+    routes, // Aquí `routes` debe ser un array
+  });
 
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    history: createHistory(process.env.VUE_ROUTER_BASE)
-  })
+  // Middleware global para proteger rutas
+  Router.beforeEach((to, from, next) => {
+    const role = getRoleFromToken();
+    const requiredRole = to.meta.requiresRole;
 
-  return Router
-})
+    if (requiredRole && role !== requiredRole) {
+      if (!role) {
+        return next("/login");
+      } else {
+        return next("/");
+      }
+    }
+
+    next();
+  });
+
+  return Router;
+});

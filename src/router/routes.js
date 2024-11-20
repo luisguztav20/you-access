@@ -2,11 +2,13 @@ const routes = [
   {
     path: "/user",
     component: () => import("src/layouts/UserLayout.vue"),
+    meta: { requiresRole: "user" }, // Solo accesible para 'user'
     children: [{ path: "", component: () => import("src/pages/UserHome.vue") }],
   },
   {
     path: "/admin",
     component: () => import("src/layouts/AdminLayout.vue"),
+    meta: { requiresRole: "admin" }, // Solo accesible para 'admin'
     children: [
       { path: "", component: () => import("src/pages/AdminHome.vue") },
       {

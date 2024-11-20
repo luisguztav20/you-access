@@ -23,12 +23,7 @@
         </p>
 
         <div class="row justify-around q-my-md">
-          <q-btn
-            color="primary"
-            label="Iniciar sesión"
-            @click="onClick"
-            to="/login"
-          />
+          <q-btn color="primary" label="Iniciar sesión" to="/login" />
           <q-btn flat color="primary" label="Crear cuenta" to="/signup" />
         </div>
       </div>
