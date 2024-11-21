@@ -39,12 +39,36 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { workpeople } from "../data/workpeople";
+// import { workpeople } from "../data/workpeople";
 import CardEmployee from "../components/CardEmployee.vue";
-import { departaments } from "src/data/departaments";
+// import { departaments } from "src/data/departaments";
 import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
 import { api } from "src/boot/axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
+socket.on("connect", () => {
+  console.log("Conectado al servidor");
+});
+
+socket.on("assistance", (data) => {
+  const employee = workpeoples.value.find((emp) => emp._id === data.user._id);
+  console.log(`Datos recibidos:`, data);
+  console.log(`isPresent: ${data.user.isPresent}`);
+  console.log(`Empleado encontrado:`, employee);
+  console.log(`Empleado presente:`, employee.isPresent);
+  if (employee) {
+    employee.isPresent = data.user.isPresent;
+  } else {
+    console.log("Empleado no encontrado");
+  }
+});
+
+socket.on("disconnect", () => {
+  console.log("Desconectado del servidor");
+});
 
 const route = useRoute();
 const departamentId = ref("");
@@ -112,9 +136,7 @@ const searchEmployee = computed(() => {
   if (!nameSearch.value) return workpeoplesFilter.value;
   return workpeoplesFilter.value.filter((empleado) => {
     const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
-    return (
-      fullName.includes(nameSearch.value.toLowerCase())
-    );
+    return fullName.includes(nameSearch.value.toLowerCase());
   });
 });
 
