@@ -16,15 +16,13 @@
         </div>
       </div>
 
-      <div class="row justify-center q-my-lg">
-        <div class="row col-11 justify-center">
-          <CardEmployee
-            v-for="(employee, id) in searchEmployee"
-            :key="id"
-            :empleado="employee"
-            :iconsNames="iconsNames"
-          />
-        </div>
+      <div class="row q-col-gutter-md q-my-md q-px-xl">
+        <CardEmployee
+          v-for="(employee, id) in searchEmployee"
+          :key="id"
+          :empleado="employee"
+          :iconsNames="iconsNames"
+        />
       </div>
     </section>
   </q-page>
@@ -32,27 +30,40 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { workpeople } from "src/data/workpeople";
 import SearchEmployeeInput from "src/components/SearchEmployeeInput.vue";
 import CardEmployee from "src/components/CardEmployee.vue";
+import { api } from "src/boot/axios";
+import { Notify } from "quasar";
 
 const workpeoples = ref([]);
 const nameSearch = ref("");
-const iconsNames = [
-  { name: "credit_card", function: "edit" },
-  { name: "delete", function: "delete" },
-];
+const iconsNames = [{ name: "credit_card", function: "edit" }];
 
 onMounted(() => {
-  workpeoples.value = workpeople;
+  api
+    .get("/api/user/withoutNfcCard")
+    .then((response) => {
+      workpeoples.value = response.data;
+      if (workpeoples.value.length === 0) {
+        Notify.create({
+          message: "Todos los trabajadores tienen tarjeta asignada",
+          color: "negative",
+          position: "center",
+          timeout: 5000,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 const searchEmployee = computed(() => {
-  //Busca un empleado por su id
   if (!nameSearch.value) return workpeoples.value;
-  return workpeoples.value.filter((empleado) =>
-    empleado.id.toLowerCase().includes(nameSearch.value.toLowerCase())
-  );
+  return workpeoples.value.filter((empleado) => {
+    const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
+    return fullName.includes(nameSearch.value.toLowerCase());
+  });
 });
 </script>
 

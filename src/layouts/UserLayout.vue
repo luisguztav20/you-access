@@ -21,42 +21,42 @@
         "
       >
         <q-list padding>
-          <q-item>
+          <q-item v-if="user && user.position">
             <q-item-section avatar>
               <q-icon color="primary" name="engineering" />
             </q-item-section>
 
             <q-item-section class="text-weight-light">
-              Ingeniero
+              {{ user.position }}
             </q-item-section>
           </q-item>
-          <q-item>
+          <q-item v-if="user && user.email">
             <q-item-section avatar>
               <q-icon color="primary" name="mail" />
             </q-item-section>
 
-            <q-item-section class="text-weight-light"
-              >luizzmendozza1904@gmail.com</q-item-section
-            >
+            <q-item-section class="text-weight-light">{{
+              user.email
+            }}</q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section avatar>
-              <q-icon color="primary" name="call" />
-            </q-item-section>
-
-            <q-item-section class="text-weight-light">
-              +503 7370 6247
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple>
             <q-item-section avatar>
               <q-icon color="primary" name="work" />
             </q-item-section>
 
             <q-item-section class="text-weight-light">
-              Ingenieria
+              {{ user.department?.name || "Sin departamento" }}
+            </q-item-section>
+          </q-item>
+          <q-item
+            :class="{ 'bg-green': user.isPresent, 'bg-red': !user.isPresent }"
+          >
+            <q-item-section avatar>
+              <q-icon color="primary" name="person" />
+            </q-item-section>
+            <q-item-section class="text-weight-light">
+              {{ user.isPresent ? "Presente" : "Ausente" }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -81,8 +81,10 @@
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
-          <div class="text-weight-bold">Nombre del usuario</div>
-          <p>ID: id ususario</p>
+          <div class="text-weight-bold">
+            {{ user.name }} {{ user.lastName }}
+          </div>
+          <p>ID: {{ user._id }}</p>
         </div>
       </q-img>
     </q-drawer>
@@ -94,20 +96,50 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { workpeople } from "src/data/workpeople";
 import { useRouter } from "vue-router";
 import { Cookies } from "quasar";
 import { Notify } from "quasar";
+import { api } from "src/boot/axios";
+import { jwtDecode } from "jwt-decode";
 
 const router = useRouter();
+const drawer = ref(false);
+const user = ref({
+  name: "",
+  lastName: "",
+  email: "",
+  position: "",
+  isPresent: false,
+  department: {
+    name: "",
+  },
+});
+const userId = ref(null);
 
 onMounted(() => {
-  employee.value = workpeople;
+  const token = Cookies.get("x-token");
+  if (token) {
+    const decoded = jwtDecode(token);
+    userId.value = decoded.id;
+  }
+
+  api
+    .get(`/api/user/${userId.value}`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      user.value = response.data;
+      console.log(user.value);
+    })
+    .catch((error) => {
+      Notify.create({
+        message: "Error al obtener los datos del usuario",
+        color: "negative",
+        position: "top",
+      });
+      console.log(error);
+    });
 });
-
-const employee = ref(null);
-
-const drawer = ref(false);
 
 function logout() {
   Cookies.remove("x-token");

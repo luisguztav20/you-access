@@ -2,40 +2,34 @@
   <q-dialog v-model="localDialog">
     <q-card style="width: 800px; border-radius: 15px">
       <q-card-section class="row items-center q-pb-none">
-        <h2 class="text-h6">Marcar ingreso</h2>
+        <h2 class="text-h6">Asignar tarjeta</h2>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
       <q-separator class="q-mx-lg" />
       <q-card-section class="column items-start q-pb-none q-px-lg">
-        <h3 class="text-h6 q-ma-none text-primary">ID: {{ employee.id }}</h3>
-        <h4 class="text-h6 q-ma-none text-primary">
-          {{ employee.name }}
-        </h4>
+        <h3 class="text-h6 q-ma-none text-primary">
+          {{ employee.email }}
+        </h3>
       </q-card-section>
       <q-separator class="q-mx-lg q-mt-lg" />
       <q-card-section class="q-px-lg">
-        <q-input
-          v-model="employeeName"
-          outlined
-          type="text"
-          label="Nombre"
-          class="q-py-md full-width"
-          disable
-        />
-        <q-select
-          v-model="selectedDepartment"
-          :options="departamentOption"
-          label="Selecciona una opción"
-          emit-value
-        />
-        <q-btn
-          color="primary"
-          rounded
-          label="Guardar cambios"
-          class="q-my-md full-width"
-          @click="saveChanges"
-        />
+        <q-form @submit="onSubmit">
+          <q-select
+            v-model="selectedCard"
+            :options="unassignedCardsOptions"
+            label="Selecciona una opción"
+            :rules="[
+              (val) => (val !== null && val !== '') || 'Seleccione una tarjeta',
+            ]"
+          />
+          <q-btn
+            label="Asignar tarjeta"
+            type="submit"
+            color="primary"
+            rounded=""
+          />
+        </q-form>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -44,7 +38,7 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { Notify } from "quasar";
-import { departaments } from "src/data/departaments";
+import { api } from "src/boot/axios";
 
 const props = defineProps({
   modelValue: {
@@ -57,35 +51,67 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  departament.value = departaments;
-
-  departamentOption.value = departament.value.map((departamento) => ({
-    label: departamento.title,
-    value: departamento.title,
-    key: departamento.name,
-  }));
-});
-
 const emit = defineEmits(["update:modelValue"]);
 const localDialog = ref(props.modelValue);
-const employeeName = ref(props.employee.name);
-const departament = ref(null);
-const departamentOption = ref(null);
-const selectedDepartment = ref(props.employee.departament);
+const unassignedCardsOptions = ref([]);
+const unassignedCards = ref([]);
+const selectedCard = ref(null);
+const employee = props.employee;
 
-const notifyPositive = () => {
+onMounted(() => {
+  console.log("employee: ", employee);
+  api
+    .get("/api/nfcCard/unassigned")
+    .then((response) => {
+      unassignedCards.value = response.data;
+      if (unassignedCards.value.length < 1) {
+        Notify.create({
+          type: "negative",
+          message: "No hay tarjetas disponibles",
+        });
+        localDialog.value = false;
+      }
+
+      unassignedCardsOptions.value = unassignedCards.value.map((card) => ({
+        label: `Tarjeta NFC: ${card.cardId}`,
+        value: card,
+        key: card._id,
+      }));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+const notifyPositive = (message) => {
   Notify.create({
+    message: message,
     type: "positive",
-    message: "Cambios guardados con exito",
+    position: "bottom",
+    timeout: 2000,
   });
 };
 
-// Llamada al hacer clic en el botón "Marcar asistencia"
-const saveChanges = () => {
-  localDialog.value = false;
-  notifyPositive();
+const onSubmit = () => {
+  api
+    .post("/api/nfcCard/assign", {
+      cardId: selectedCard.value.key,
+      userId: employee._id,
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        notifyPositive("Tarjeta asignada correctamente");
+        onReset();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
+
+function onReset() {
+  selectedCard.value = null;
+}
 
 //Emitir el evento para actualizar el valor en el componente padre
 watch(localDialog, (newValue) => {
