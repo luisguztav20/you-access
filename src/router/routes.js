@@ -15,7 +15,10 @@ const routes = [
         path: "manager/:id",
         component: () => import("src/pages/AdminManager.vue"),
       },
-
+      {
+        path: "all-employees",
+        component: () => import("src/pages/AllEmployees.vue"),
+      },
       {
         path: "edit-employee",
         component: () => import("src/pages/AdminEditEmployee.vue"),
@@ -33,21 +36,23 @@ const routes = [
   {
     path: "/",
     component: () => import("src/pages/WelcomPage.vue"),
+    meta: { public: true }, // Ruta pública
   },
   {
     path: "/login",
     component: () => import("src/pages/LoginPage.vue"),
+    meta: { public: true }, // Ruta pública
   },
   {
     path: "/signup",
     component: () => import("src/pages/SignupPage.vue"),
+    meta: { public: true }, // Ruta pública
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: "/:catchAll(.*)*",
     component: () => import("pages/ErrorNotFound.vue"),
+    meta: { public: true }, // Ruta pública
   },
 ];
 

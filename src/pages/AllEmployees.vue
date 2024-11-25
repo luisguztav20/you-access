@@ -9,7 +9,7 @@
                 {{ departament.name }}
               </h2>
               <h3 class="text-h6 text-weight-light q-mt-none">
-                Mienbros del departamento
+                Todos los empleados
               </h3>
             </div>
             <searchEmployeeInput v-model="nameSearch" />
@@ -43,41 +43,6 @@ import CardEmployee from "../components/CardEmployee.vue";
 import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
 import { api } from "src/boot/axios";
-import { io } from "socket.io-client";
-import { Notify } from "quasar";
-
-const socket = io("http://localhost:3000");
-
-socket.on("connect", () => {
-  console.log("Conectado al servidor");
-});
-
-socket.on("unassignedCard", (data) => {
-  console.log(data);
-  const { card } = data;
-  const { cardId } = card;
-  notify(
-    `Alguien esta intentando usar la tarjeta con codigo: ${cardId}, que no esta asignada`,
-    "negative"
-  );
-});
-
-socket.on("assistance", (data) => {
-  const employee = workpeoples.value.find((emp) => emp._id === data.user._id);
-  console.log(`Datos recibidos:`, data);
-  console.log(`isPresent: ${data.user.isPresent}`);
-  console.log(`Empleado encontrado:`, employee);
-  console.log(`Empleado presente:`, employee.isPresent);
-  if (employee) {
-    employee.isPresent = data.user.isPresent;
-  } else {
-    console.log("Empleado no encontrado");
-  }
-});
-
-socket.on("disconnect", () => {
-  console.log("Desconectado del servidor");
-});
 
 const route = useRoute();
 const departamentId = ref("");
@@ -88,39 +53,29 @@ const nameDepartament = ref();
 const keyDepartament = ref();
 
 onMounted(() => {
-  // Obtiene el id del departamento que se paso en la ruta
   departamentId.value = route.params.id;
-
   api
-    .get(`/api/department/${departamentId.value}`, {
+    .get("/api/user", {
       withCredentials: true,
     })
     .then((response) => {
-      departament.value = response.data;
-      workpeoples.value = response.data.employees;
+      workpeoples.value = response.data;
       console.log(response.data);
-      console.log(`Empleados en ${departament.value.name}:`, workpeoples.value);
     })
     .catch((error) => {
       console.log(error);
     });
 });
 
-// const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
-
 const iconsNames = [{ name: "description", function: "report" }];
 
 const workpeoplesFilter = computed(() => {
-  // Filtra a los empleados de cada depto dependiento del parametro recibido en la ruta
   return workpeoples.value.filter(
     (employee) => employee.departament === keyDepartament.value
   );
 });
 
-// Control de asistencia de empleados
-
 const presents = computed(() => {
-  // Hace un conteo de los trabajadores presentes
   let count = 0;
   workpeoplesFilter.value.forEach((item) => {
     if (item.isPresent) {
@@ -130,15 +85,13 @@ const presents = computed(() => {
   return count;
 });
 
-const absent = computed(() => totalWorkPeople.value - presents.value); // hace un conteo de los ausentes
+const absent = computed(() => totalWorkPeople.value - presents.value);
 
 const totalWorkPeople = computed(() => {
-  // devuelve el total de empleados en un depto
   return workpeoplesFilter.value.length;
 });
 
 const searchEmployee = computed(() => {
-  // Busca un empleado por su nombre completo (nombre y apellido)
   if (!nameSearch.value) return workpeoplesFilter.value;
   return workpeoplesFilter.value.filter((empleado) => {
     const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
@@ -147,20 +100,10 @@ const searchEmployee = computed(() => {
 });
 
 const searchDepartament = computed(() => {
-  // Devuelve el nombre del departamento segun el id que se paso en la ruta
   return departament.value.filter((departamento) =>
     departamento.name.includes(departamentId.value)
   );
 });
-
-const notify = (message, type) => {
-  Notify.create({
-    message: message,
-    type: type,
-    position: "top",
-    timeout: 2000,
-  });
-};
 </script>
 
 <style scoped></style>

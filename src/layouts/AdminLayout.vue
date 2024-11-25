@@ -54,6 +54,11 @@ const linksList = [
     name: "admin",
   },
   {
+    title: "Todos los empleados",
+    icon: "person",
+    name: "admin/all-employees",
+  },
+  {
     title: "Generar reportes",
     icon: "description",
     name: "admin/reports",

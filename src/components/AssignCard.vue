@@ -59,7 +59,6 @@ const selectedCard = ref(null);
 const employee = props.employee;
 
 onMounted(() => {
-  console.log("employee: ", employee);
   api
     .get("/api/nfcCard/unassigned")
     .then((response) => {

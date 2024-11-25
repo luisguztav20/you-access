@@ -8,7 +8,7 @@
               <h2 class="text-primary text-h5 text-bold q-mb-none">
                 Asignar tarjeta de asisitencia
               </h2>
-              <h3 class="text-h6 text-weight-light q-mt-none">trabajadores</h3>
+              <h3 class="text-h6 text-weight-light q-mt-md">Trabajadores sin tarjeta asignada</h3>
             </div>
             <searchEmployeeInput v-model="nameSearch" />
           </div>
@@ -46,7 +46,7 @@ onMounted(() => {
       workpeoples.value = response.data;
       if (workpeoples.value.length === 0) {
         Notify.create({
-          message: "Todos los trabajadores tienen tarjeta asignada",
+          message: "No hay trabajadores para asignar tarjeta",
           color: "negative",
           position: "center",
           timeout: 5000,

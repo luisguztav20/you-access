@@ -112,12 +112,12 @@ const onSubmit = () => {
       }
     })
     .catch((error) => {
-      if (error.response.message === "User already in department") {
-        notifyNegative("El trabajador ya esta registrado en el departamento");
+      if (error.response.status === 400) {
+        notifyNegative("El trabajador ya tiene departamento asignado");
       } else if (error.response.status === 404) {
         notifyNegative("El trabajador no esta registrado en el sistema");
-      } else if (error.response.status === 400) {
-        notifyNegative("El trabajador ya esta registrado en el departamento");
+      } else {
+        notifyNegative("Error al agregar trabajador");
       }
       console.log(error);
     });
@@ -130,14 +130,6 @@ function onReset() {
 }
 
 onMounted(() => {
-  // departament.value = departaments;
-
-  // departamentsOptions.value = departament.value.map((departamento) => ({
-  //   label: departamento.title,
-  //   value: departamento.title,
-  //   key: departamento.name,
-  // }));
-
   api
     .get("/api/department", {
       withCredentials: true,

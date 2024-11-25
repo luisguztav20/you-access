@@ -49,22 +49,26 @@
               color="primary"
               @click="Dialog(iconName.function)"
             />
+            <!-- <q-btn
+              flat
+              icon="delete"
+              color="negative"
+              @click="Dialog('delete')"
+            /> -->
           </q-card-actions>
         </div>
       </q-item>
 
       <ReportDialog v-model="report" :employee="empleado" />
-
-      <EditEmployee v-model="edit" :employee="empleado" />
+      <AssignCard v-model="edit" :employee="empleado" />
     </q-card>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-
 import ReportDialog from "../components/ReportDialog.vue";
-import EditEmployee from "../components/EditEmployee.vue";
+import AssignCard from "../components/AssignCard.vue";
 
 const report = ref(false);
 const edit = ref(false);
@@ -88,12 +92,6 @@ function Dialog(name) {
     edit.value = true;
   }
   if (name == "delete") {
-    console.log(
-      "empledao : " +
-        props.empleado.name +
-        " eliminado ID: " +
-        props.empleado.id
-    );
   }
 }
 </script>
