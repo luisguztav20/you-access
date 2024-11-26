@@ -98,19 +98,19 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  cardId: {
-    type: String,
-    required: false,
-  },
+  // cardId: {
+  //   type: String,
+  //   required: false,
+  // },
 });
 
-if (props.cardId) {
-  employeeCard.value = props.cardId;
-} else if (props.empleado.nfcCard.cardId) {
-  employeeCard.value = props.empleado.nfcCard.cardId;
-} else {
-  employeeCard.value = "Sin tarjeta";
-}
+// if (props.cardId) {
+//   employeeCard.value = props.cardId;
+// } else if (props.empleado.nfcCard.cardId) {
+//   employeeCard.value = props.empleado.nfcCard.cardId;
+// } else {
+//   employeeCard.value = "Sin tarjeta";
+// }
 
 if (props.departmentName) {
   employeeDepartment.value = props.departmentName;
