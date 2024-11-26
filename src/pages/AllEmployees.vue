@@ -43,14 +43,42 @@ import CardEmployee from "../components/CardEmployee.vue";
 import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
 import { api } from "src/boot/axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
+
+socket.on("connect", () => {
+  console.log("Conectado al servidor");
+});
+
+socket.on("unassignedCard", (data) => {
+  console.log(data);
+  const { card } = data;
+  const { cardId } = card;
+  notify(
+    `Alguien esta intentando usar la tarjeta con codigo: ${cardId}, que no esta asignada`,
+    "negative"
+  );
+});
+
+socket.on("assistance", (data) => {
+  const employee = workpeoples.value.find((emp) => emp._id === data.user._id);
+  if (employee) {
+    employee.isPresent = data.user.isPresent;
+  } else {
+    console.log("Empleado no encontrado");
+  }
+});
+
+socket.on("disconnect", () => {
+  console.log("Desconectado del servidor");
+});
 
 const route = useRoute();
 const departamentId = ref("");
 const workpeoples = ref([]);
 const nameSearch = ref("");
 const departament = ref([]);
-const nameDepartament = ref();
-const keyDepartament = ref();
 
 onMounted(() => {
   departamentId.value = route.params.id;
@@ -69,15 +97,9 @@ onMounted(() => {
 
 const iconsNames = [{ name: "description", function: "report" }];
 
-const workpeoplesFilter = computed(() => {
-  return workpeoples.value.filter(
-    (employee) => employee.departament === keyDepartament.value
-  );
-});
-
 const presents = computed(() => {
   let count = 0;
-  workpeoplesFilter.value.forEach((item) => {
+  workpeoples.value.forEach((item) => {
     if (item.isPresent) {
       return count++;
     }
@@ -88,21 +110,15 @@ const presents = computed(() => {
 const absent = computed(() => totalWorkPeople.value - presents.value);
 
 const totalWorkPeople = computed(() => {
-  return workpeoplesFilter.value.length;
+  return workpeoples.value.length;
 });
 
 const searchEmployee = computed(() => {
-  if (!nameSearch.value) return workpeoplesFilter.value;
-  return workpeoplesFilter.value.filter((empleado) => {
+  if (!nameSearch.value) return workpeoples.value;
+  return workpeoples.value.filter((empleado) => {
     const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
     return fullName.includes(nameSearch.value.toLowerCase());
   });
-});
-
-const searchDepartament = computed(() => {
-  return departament.value.filter((departamento) =>
-    departamento.name.includes(departamentId.value)
-  );
 });
 </script>
 

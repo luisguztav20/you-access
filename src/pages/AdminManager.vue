@@ -29,6 +29,8 @@
           v-for="(employee, id) in searchEmployee"
           :key="id"
           :empleado="employee"
+          :department-name="departament.name"
+          :card-id="employee.cardId"
           :iconsNames="iconsNames"
         />
       </div>
@@ -106,23 +108,11 @@ onMounted(() => {
     });
 });
 
-// const iconsNames = ["how_to_reg", "exit_to_app", "info"]; //iconos para el card de empleados
-
 const iconsNames = [{ name: "description", function: "report" }];
 
-const workpeoplesFilter = computed(() => {
-  // Filtra a los empleados de cada depto dependiento del parametro recibido en la ruta
-  return workpeoples.value.filter(
-    (employee) => employee.departament === keyDepartament.value
-  );
-});
-
-// Control de asistencia de empleados
-
 const presents = computed(() => {
-  // Hace un conteo de los trabajadores presentes
   let count = 0;
-  workpeoplesFilter.value.forEach((item) => {
+  workpeoples.value.forEach((item) => {
     if (item.isPresent) {
       return count++;
     }
@@ -130,27 +120,20 @@ const presents = computed(() => {
   return count;
 });
 
-const absent = computed(() => totalWorkPeople.value - presents.value); // hace un conteo de los ausentes
+const absent = computed(() => totalWorkPeople.value - presents.value);
 
 const totalWorkPeople = computed(() => {
   // devuelve el total de empleados en un depto
-  return workpeoplesFilter.value.length;
+  return workpeoples.value.length;
 });
 
 const searchEmployee = computed(() => {
   // Busca un empleado por su nombre completo (nombre y apellido)
-  if (!nameSearch.value) return workpeoplesFilter.value;
-  return workpeoplesFilter.value.filter((empleado) => {
+  if (!nameSearch.value) return workpeoples.value;
+  return workpeoples.value.filter((empleado) => {
     const fullName = `${empleado.name.toLowerCase()} ${empleado.lastName.toLowerCase()}`;
     return fullName.includes(nameSearch.value.toLowerCase());
   });
-});
-
-const searchDepartament = computed(() => {
-  // Devuelve el nombre del departamento segun el id que se paso en la ruta
-  return departament.value.filter((departamento) =>
-    departamento.name.includes(departamentId.value)
-  );
 });
 
 const notify = (message, type) => {

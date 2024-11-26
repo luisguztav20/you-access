@@ -28,6 +28,7 @@
             type="submit"
             color="primary"
             rounded=""
+            :disable="disableButtom"
           />
         </q-form>
       </q-card-section>
@@ -57,6 +58,7 @@ const unassignedCardsOptions = ref([]);
 const unassignedCards = ref([]);
 const selectedCard = ref(null);
 const employee = props.employee;
+const disableButtom = ref(true);
 
 onMounted(() => {
   api
@@ -64,18 +66,21 @@ onMounted(() => {
     .then((response) => {
       unassignedCards.value = response.data;
       if (unassignedCards.value.length < 1) {
-        Notify.create({
-          type: "negative",
-          message: "No hay tarjetas disponibles",
-        });
-        localDialog.value = false;
+        unassignedCardsOptions.value = [
+          {
+            label: "No hay tarjetas disponibles",
+            value: null,
+            key: null,
+          },
+        ];
+      } else {
+        disableButtom.value = false;
+        unassignedCardsOptions.value = unassignedCards.value.map((card) => ({
+          label: `Tarjeta NFC: ${card.cardId}`,
+          value: card,
+          key: card._id,
+        }));
       }
-
-      unassignedCardsOptions.value = unassignedCards.value.map((card) => ({
-        label: `Tarjeta NFC: ${card.cardId}`,
-        value: card,
-        key: card._id,
-      }));
     })
     .catch((error) => {
       console.log(error);

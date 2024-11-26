@@ -34,7 +34,17 @@
               {{ empleado.email }}</q-item-label
             >
             <q-item-label caption>
+              <span class="text-bold">Departamento:</span>
+              {{ employeeDepartment }}
+            </q-item-label>
+            <q-item-label caption>
               <span class="text-bold">Cargo:</span> {{ empleado.position }}
+            </q-item-label>
+            <q-item-label
+              caption
+              v-if="employeeCard && employeeCard !== 'Sin tarjeta'"
+            >
+              <span class="text-bold">Tarjeta:</span> {{ employeeCard }}
             </q-item-label>
           </q-item-section>
           <q-separator />
@@ -72,6 +82,8 @@ import AssignCard from "../components/AssignCard.vue";
 
 const report = ref(false);
 const edit = ref(false);
+const employeeDepartment = ref("");
+const employeeCard = ref("");
 
 const props = defineProps({
   empleado: {
@@ -82,7 +94,30 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  departmentName: {
+    type: String,
+    required: false,
+  },
+  cardId: {
+    type: String,
+    required: false,
+  },
 });
+
+if (props.cardId) {
+  employeeCard.value = props.cardId;
+} else if (props.empleado.nfcCard.cardId) {
+  employeeCard.value = props.empleado.nfcCard.cardId;
+} else {
+  employeeCard.value = "Sin tarjeta";
+}
+
+if (props.departmentName) {
+  employeeDepartment.value = props.departmentName;
+} else {
+  employeeDepartment.value =
+    props.empleado?.department?.name || "Sin departamento";
+}
 
 function Dialog(name) {
   if (name === "report") {
