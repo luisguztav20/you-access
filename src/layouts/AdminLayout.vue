@@ -59,7 +59,7 @@ const linksList = [
     name: "admin/all-employees",
   },
   {
-    title: "Generar reportes",
+    title: "Ver asistencias",
     icon: "description",
     name: "admin/reports",
   },
@@ -67,6 +67,11 @@ const linksList = [
     title: "Agregar empleado a departamento",
     icon: "add",
     name: "admin/add-employee",
+  },
+  {
+    title: "Ver tarjetas",
+    icon: "credit_card",
+    name: "admin/all-cards",
   },
   {
     title: "Asignar tarjeta",

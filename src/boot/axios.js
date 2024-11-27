@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const api = axios.create({
-  baseURL: "https://youaccess-backend-0388e95e5b0d.herokuapp.com",
+  baseURL: "http://localhost:3000",
   withCredentials: true,
 });
 

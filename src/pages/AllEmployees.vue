@@ -38,7 +38,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
 import CardEmployee from "../components/CardEmployee.vue";
 import CrontrolEmployeeBarVue from "src/components/CrontrolEmployeeBar.vue";
 import searchEmployeeInput from "../components/SearchEmployeeInput.vue";
@@ -50,19 +49,18 @@ const notify = (message, color) => {
   Notify.create({
     message,
     color,
-    position: "top",
-    timeout: 3000,
+    position: "top-right",
+    timeout: 5000,
   });
 };
 
-const socket = io("https://youaccess-backend-0388e95e5b0d.herokuapp.com");
+const socket = io("http://localhost:3000");
 
 socket.on("connect", () => {
   console.log("Conectado al servidor");
 });
 
 socket.on("unassignedCard", (data) => {
-  console.log(data);
   const { card } = data;
   const { cardId } = card;
   notify(
@@ -73,12 +71,16 @@ socket.on("unassignedCard", (data) => {
 
 socket.on("assistance", (data) => {
   const employee = workpeoples.value.find((emp) => emp._id === data.user._id);
+  const { user } = data;
+  const { card } = data;
   if (employee) {
     employee.isPresent = data.user.isPresent;
-    console.log(`Datos recibidos:`, data);
-    console.log(`isPresent: ${data.user.isPresent}`);
-    console.log(`Empleado encontrado:`, employee);
-    console.log(`Empleado presente:`, employee.isPresent);
+    notify(
+      `El empledo ${user.name} ${user.lastName} con tarjeta ${card.cardId} ${
+        data.user.isPresent ? "entro a la empresa" : "salio de la empresa"
+      }`,
+      "secondary"
+    );
   } else {
     console.log("Empleado no encontrado");
   }
@@ -88,14 +90,11 @@ socket.on("disconnect", () => {
   console.log("Desconectado del servidor");
 });
 
-const route = useRoute();
-const departamentId = ref("");
 const workpeoples = ref([]);
 const nameSearch = ref("");
 const departament = ref([]);
 
 onMounted(() => {
-  departamentId.value = route.params.id;
   api
     .get("/api/user", {
       withCredentials: true,

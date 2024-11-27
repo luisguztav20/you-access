@@ -35,11 +35,7 @@
             outlined
             label="Departamento"
             v-model="selectedDepartment"
-            :options="departamentOptions"
-            :rules="[
-              (val) =>
-                (val !== null && val !== '') || 'Seleccione un departamento',
-            ]"
+            :options="departamentsOptions"
             class="col-xs-12 col-sm-6"
           />
           <q-btn
@@ -49,7 +45,6 @@
             color="primary"
             icon="search"
             class="q-mt-md"
-            @click="validateAndSearch"
           />
           <q-btn
             outline
@@ -58,7 +53,6 @@
             icon="picture_as_pdf"
             color="primary"
             class="q-mt-md"
-            v-if="stateReports"
           />
           <q-btn
             flat
@@ -68,8 +62,6 @@
             icon="delete"
             color="primary"
             class="q-mt-md"
-            @click="clean"
-            v-if="stateReports"
           />
         </q-form>
 
@@ -82,7 +74,6 @@
           class="q-mt-md"
           flat
           bordered
-          v-if="stateReports"
         />
       </q-card>
     </div>
@@ -91,25 +82,83 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { departaments } from "src/data/departaments";
+import { api } from "src/boot/axios";
+import { Notify } from "quasar";
+
+const notify = (message, color) => {
+  Notify.create({
+    message,
+    color,
+    position: "top-right",
+    timeout: 5000,
+  });
+};
 
 // Variables reactivas
 const startDate = ref(null);
 const endDate = ref(null);
-const selectedDepartment = ref(null); //v-model
-const departamentOptions = ref([]); // lista de departamentos
-const stateReports = ref(false);
+const departamentsOptions = ref([]);
+const selectedDepartment = ref(null);
+const departament = ref([]);
+const stateReports = ref(true);
+
+// Datos de la tabla
+const rows = ref([]);
+
+const columns = ref([
+  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
+  { name: "entrada", label: "ENTRADA", align: "center", field: "entrada" },
+  { name: "salida", label: "SALIDA", align: "center", field: "salida" },
+]);
 
 onMounted(() => {
-  departamentOptions.value = departaments.map((departamento) => ({
-    label: departamento.title,
-    value: departamento.title,
-    key: departamento.name,
-  }));
+  api
+    .get("/api/department", {
+      withCredentials: true,
+    })
+    .then((response) => {
+      departament.value = response.data;
+      departamentsOptions.value = departament.value.map((departamento) => ({
+        label: departamento.name,
+        value: departamento._id,
+        key: departamento._id,
+      }));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 const onSubmit = () => {
-  stateReports.value = true;
+  console.log(`Start date: ${startDate.value} - End date: ${endDate.value}`);
+  api
+    .get("/api/attendance/date-range", {
+      params: {
+        startDate: startDate.value,
+        endDate: endDate.value,
+      },
+      withCredentials: true,
+    })
+    .then((response) => {
+      console.log(response.data);
+      rows.value = response.data.map((item) => ({
+        nombre: `${item.userId.name} ${item.userId.lastName}`,
+        entrada: formatDate(item.checkIn),
+        salida: formatDate(item.checkOut),
+      }));
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        notify("No hay registros de asistencia", "negative");
+      }
+      console.log(error);
+    });
+};
+
+const formatDate = (date) => {
+  if (!date) return "Sin marcar";
+  const newDate = new Date(date);
+  return `${newDate.toLocaleDateString()} ${newDate.toLocaleTimeString()}`;
 };
 
 const onReset = () => {
@@ -118,32 +167,6 @@ const onReset = () => {
   selectedDepartment.value = "";
   stateReports.value = false;
 };
-
-// Datos de la tabla
-const rows = ref([
-  {
-    id: 1,
-    nombre: "Juan Pérez",
-    fecha: "22/05/2024",
-    entrada: "07:00",
-    salida: "17:00",
-  },
-  {
-    id: 2,
-    nombre: "Ana Gómez",
-    fecha: "22/05/2024",
-    entrada: "07:00",
-    salida: "17:00",
-  },
-]);
-
-const columns = ref([
-  { name: "id", label: "ID", align: "left", field: "id" },
-  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-  { name: "fecha", label: "FECHA", align: "center", field: "fecha" },
-  { name: "entrada", label: "HORA ENTRADA", align: "center", field: "entrada" },
-  { name: "salida", label: "HORA SALIDA", align: "center", field: "salida" },
-]);
 </script>
 
 <style scoped>

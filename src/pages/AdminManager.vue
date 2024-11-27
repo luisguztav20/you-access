@@ -48,7 +48,7 @@ import { api } from "src/boot/axios";
 import { io } from "socket.io-client";
 import { Notify } from "quasar";
 
-const socket = io("https://youaccess-backend-0388e95e5b0d.herokuapp.com");
+const socket = io("http://localhost:3000");
 
 socket.on("connect", () => {
   console.log("Conectado al servidor");
@@ -66,12 +66,16 @@ socket.on("unassignedCard", (data) => {
 
 socket.on("assistance", (data) => {
   const employee = workpeoples.value.find((emp) => emp._id === data.user._id);
-  console.log(`Datos recibidos:`, data);
-  console.log(`isPresent: ${data.user.isPresent}`);
-  console.log(`Empleado encontrado:`, employee);
-  console.log(`Empleado presente:`, employee.isPresent);
+  const { user } = data;
+  const { card } = data;
   if (employee) {
     employee.isPresent = data.user.isPresent;
+    notify(
+      `El empledo ${user.name} ${user.lastName} con tarjeta ${card.cardId} ${
+        data.user.isPresent ? "entro a la empresa" : "salio de la empresa"
+      }`,
+      "secondary"
+    );
   } else {
     console.log("Empleado no encontrado");
   }
@@ -86,8 +90,6 @@ const departamentId = ref("");
 const workpeoples = ref([]);
 const nameSearch = ref("");
 const departament = ref([]);
-const nameDepartament = ref();
-const keyDepartament = ref();
 
 onMounted(() => {
   // Obtiene el id del departamento que se paso en la ruta
@@ -101,7 +103,6 @@ onMounted(() => {
       departament.value = response.data;
       workpeoples.value = response.data.employees;
       console.log(response.data);
-      console.log(`Empleados en ${departament.value.name}:`, workpeoples.value);
     })
     .catch((error) => {
       console.log(error);
@@ -136,12 +137,12 @@ const searchEmployee = computed(() => {
   });
 });
 
-const notify = (message, type) => {
+const notify = (message, color) => {
   Notify.create({
-    message: message,
-    type: type,
-    position: "top",
-    timeout: 2000,
+    message,
+    color,
+    position: "top-right",
+    timeout: 5000,
   });
 };
 </script>
