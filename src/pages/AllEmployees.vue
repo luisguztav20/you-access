@@ -54,7 +54,7 @@ const notify = (message, color) => {
   });
 };
 
-const socket = io("http://localhost:3000");
+const socket = io("https://youaccess-backend-0388e95e5b0d.herokuapp.com");
 
 socket.on("connect", () => {
   console.log("Conectado al servidor");

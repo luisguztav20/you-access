@@ -90,8 +90,8 @@
 
 <script setup>
 import { Notify } from "quasar"; // Importar Notify de Quasar
-
 import { ref, watch } from "vue";
+import { api } from "src/boot/axios";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -103,6 +103,95 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 const localDialog = ref(props.modelValue);
+
+// Emitir el evento para actualizar el valor en el componente padre
+watch(localDialog, (newValue) => {
+  emit("update:modelValue", newValue);
+});
+
+// Sincronizar cambios cuando la prop `modelValue` cambie desde el padre
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    localDialog.value = newValue;
+  }
+);
+
+const columns = ref([
+  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
+  { name: "email", label: "EMAIL", align: "left", field: "email" },
+  { name: "entrada", label: "ENTRADA", align: "left", field: "entrada" },
+  { name: "salida", label: "SALIDA", align: "left", field: "salida" },
+]);
+
+const rows = ref([
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+  {
+    nombre: "Nombre",
+    email: "Email",
+    entrada: "Entrada",
+    salida: "Salida",
+  },
+]);
+
+const pagination = ref({
+  sortBy: "nombre",
+  descending: false,
+  rowsPerPage: 5,
+});
 
 const date = ref("");
 const dateEnd = ref("");
@@ -127,116 +216,6 @@ const onReset = () => {
   dateEnd.value = null;
   stateReport.value = false;
 };
-
-// Emitir el evento para actualizar el valor en el componente padre
-watch(localDialog, (newValue) => {
-  emit("update:modelValue", newValue);
-});
-
-// Sincronizar cambios cuando la prop `modelValue` cambie desde el padre
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    localDialog.value = newValue;
-  }
-);
-
-const columns = [
-  {
-    name: "id",
-    label: "ID",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    align: "left",
-    sortable: true,
-  },
-  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-  { name: "fecha", label: "FECHA", align: "left", field: "fecha" },
-  {
-    name: "entrada",
-    label: "HORA ENTRADA",
-    align: "center",
-    field: "entrada",
-    sortable: true,
-  },
-  {
-    name: "salida",
-    label: "HORA SALIDA",
-    align: "center",
-    field: "salida",
-    sortable: true,
-  },
-];
-
-const rows = ref([
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "2/5/2024",
-    entrada: "7:05",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-]);
-
-const pagination = ref({
-  rowsPerPage: 0, // Todas las filas visibles
-});
 </script>
 
 <style lang="scss" scoped>

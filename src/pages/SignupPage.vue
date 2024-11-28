@@ -19,7 +19,12 @@
               outlined
               dense
               class="q-mb-md full-width"
-              :rules="[(val) => !!val || 'El nombre es obligatorio']"
+              :rules="[
+                (val) => !!val || 'El nombre es obligatorio',
+                (val) =>
+                  /^[a-zA-Z]+$/.test(val) ||
+                  'El nombre solo puede contener letras',
+              ]"
             />
           </div>
           <div class="col">
@@ -30,7 +35,12 @@
               outlined
               dense
               class="q-mb-md full-width"
-              :rules="[(val) => !!val || 'El apellido es obligatorio']"
+              :rules="[
+                (val) => !!val || 'El apellido es obligatorio',
+                (val) =>
+                  /^[a-zA-Z]+$/.test(val) ||
+                  'El apellido solo puede contener letras',
+              ]"
             />
           </div>
         </div>
@@ -73,7 +83,7 @@
         <q-btn
           label="Iniciar sesion"
           rounded
-          class="full-width q-mt-md google-btn"
+          class="full-width q-mt-md"
           to="/login"
           flat
         />

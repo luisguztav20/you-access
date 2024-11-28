@@ -14,22 +14,21 @@
             label="Fecha inicial"
             type="date"
             v-model="startDate"
+            class="col-xs-12 col-sm-6"
             :rules="[
               (val) =>
                 (val !== null && val !== '') || 'Ingrese una fecha inicial',
             ]"
-            class="col-xs-12 col-sm-6"
+            clearable
           />
           <q-input
             outlined
             label="Fecha final"
             type="date"
             v-model="endDate"
-            :rules="[
-              (val) =>
-                (val !== null && val !== '') || 'Ingrese una fecha final',
-            ]"
+            :rules="[validateEndDate]"
             class="col-xs-12 col-sm-6"
+            clearable
           />
           <q-select
             outlined
@@ -47,6 +46,7 @@
             class="q-mt-md"
           />
           <q-btn
+            v-if="stateReports"
             outline
             rounded
             label="generar reporte"
@@ -55,6 +55,7 @@
             class="q-mt-md"
           />
           <q-btn
+            v-if="stateReports"
             flat
             rounded
             type="reset"
@@ -62,12 +63,14 @@
             icon="delete"
             color="primary"
             class="q-mt-md"
+            @click="onReset"
           />
         </q-form>
 
         <!-- Tabla -->
         <q-separator class="q-my-lg" />
         <q-table
+          v-if="stateReports"
           :rows="rows"
           :columns="columns"
           row-key="id"
@@ -97,19 +100,21 @@ const notify = (message, color) => {
 // Variables reactivas
 const startDate = ref(null);
 const endDate = ref(null);
-const departamentsOptions = ref([]);
 const selectedDepartment = ref(null);
+const departamentsOptions = ref([]);
 const departament = ref([]);
-const stateReports = ref(true);
+const stateReports = ref(false);
 
 // Datos de la tabla
-const rows = ref([]);
 
 const columns = ref([
   { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-  { name: "entrada", label: "ENTRADA", align: "center", field: "entrada" },
-  { name: "salida", label: "SALIDA", align: "center", field: "salida" },
+  { name: "email", label: "EMAIL", align: "left", field: "email" },
+  { name: "entrada", label: "ENTRADA", align: "left", field: "entrada" },
+  { name: "salida", label: "SALIDA", align: "left", field: "salida" },
 ]);
+
+const rows = ref([]);
 
 onMounted(() => {
   api
@@ -117,42 +122,144 @@ onMounted(() => {
       withCredentials: true,
     })
     .then((response) => {
-      departament.value = response.data;
-      departamentsOptions.value = departament.value.map((departamento) => ({
-        label: departamento.name,
-        value: departamento._id,
-        key: departamento._id,
-      }));
+      if (response.status === 200) {
+        departament.value = response.data;
+        departamentsOptions.value = departament.value.map((departamento) => ({
+          label: departamento.name,
+          value: departamento._id,
+          key: departamento._id,
+        }));
+      }
     })
     .catch((error) => {
       console.log(error);
+      if (error.status === 404) {
+        notify("No hay departamentos registrados", "negative");
+      }
     });
 });
 
 const onSubmit = () => {
-  console.log(`Start date: ${startDate.value} - End date: ${endDate.value}`);
-  api
-    .get("/api/attendance/date-range", {
-      params: {
-        startDate: startDate.value,
-        endDate: endDate.value,
-      },
-      withCredentials: true,
-    })
-    .then((response) => {
-      console.log(response.data);
-      rows.value = response.data.map((item) => ({
-        nombre: `${item.userId.name} ${item.userId.lastName}`,
-        entrada: formatDate(item.checkIn),
-        salida: formatDate(item.checkOut),
-      }));
-    })
-    .catch((error) => {
-      if (error.response.status === 404) {
-        notify("No hay registros de asistencia", "negative");
-      }
-      console.log(error);
-    });
+  // Si todos los campos están vacíos se buscaran todas las asistencias
+  if (
+    startDate.value === null &&
+    endDate.value === null &&
+    selectedDepartment.value === null
+  ) {
+    api
+      .get(`/api/attendance/all`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("All data", response.data);
+        const { attendances } = response.data;
+        console.log(attendances);
+        rows.value = attendances.map((item) => ({
+          nombre: `${item.userId.name} ${item.userId.lastName}`,
+          email: `${item.userId.email}`,
+          entrada: formatDate(item.checkIn),
+          salida: formatDate(item.checkOut),
+        }));
+      })
+      .catch((error) => {
+        if (error.status === 404) {
+          notify("No hay registros de asistencia", "negative");
+        }
+        console.log(error);
+      });
+  }
+
+  // Si se seleccionan fechas pero no departamento se buscaran las asistencias por el rango de fechas
+  if (
+    startDate.value != null &&
+    endDate.value != null &&
+    selectedDepartment.value === null
+  ) {
+    api
+      .get("/api/attendance/date-range", {
+        params: {
+          startDate: startDate.value,
+          endDate: endDate.value,
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          notify(
+            `Asistencias encontradas: ${response.data.length}`,
+            "positive"
+          );
+          stateReports.value = true;
+          rows.value = response.data.map((item) => ({
+            nombre: `${item.userId.name} ${item.userId.lastName}`,
+            email: `${item.userId.email}`,
+            entrada: formatDate(item.checkIn),
+            salida: formatDate(item.checkOut),
+          }));
+        }
+        rows.value = response.data.map((item) => ({
+          nombre: `${item.userId.name} ${item.userId.lastName}`,
+          email: `${item.userId.email}`,
+          entrada: formatDate(item.checkIn),
+          salida: formatDate(item.checkOut),
+        }));
+      })
+      .catch((error) => {
+        if (error.status === 404) {
+          notify("No hay registros de asistencia", "negative");
+        }
+        console.log(error);
+      });
+  }
+
+  // Si se selecciona departamento pero no fechas se buscaran las asistencias por departamento
+  if (
+    startDate.value === null &&
+    endDate.value === null &&
+    selectedDepartment.value != null
+  ) {
+    api
+      .get(`/api/attendance/department/${selectedDepartment.value.key}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          const { attendances } = response.data;
+          notify(`Asistencias encontradas: ${attendances.length}`, "positive");
+          stateReports.value = true;
+          rows.value = attendances.map((item) => ({
+            nombre: `${item.userId.name} ${item.userId.lastName}`,
+            email: `${item.userId.email}`,
+            entrada: formatDate(item.checkIn),
+            salida: formatDate(item.checkOut),
+          }));
+        }
+      })
+      .catch((error) => {
+        if (error.status === 404) {
+          notify("No hay registros de asistencia", "negative");
+        }
+        console.log(error);
+      });
+  }
+};
+
+const validateEndDate = (val) => {
+  const currentDate = new Date();
+  const dateForValidation = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+  console.log("Fecha actual", dateForValidation);
+  if (startDate.value && (!val || val === "")) {
+    return "Ingrese una fecha final";
+  }
+  if (val < startDate.value) {
+    return "La fecha final no puede ser menor a la fecha inicial";
+  }
+  if (val > dateForValidation) {
+    return `La fecha final no puede ser mayor a la fecha actual: ${currentDate}`;
+  }
+  return true;
 };
 
 const formatDate = (date) => {
@@ -162,9 +269,10 @@ const formatDate = (date) => {
 };
 
 const onReset = () => {
-  startDate.value = "";
-  endDate.value = "";
-  selectedDepartment.value = "";
+  startDate.value = null;
+  endDate.value = null;
+  selectedDepartment.value = null;
+  rows.value = [];
   stateReports.value = false;
 };
 </script>

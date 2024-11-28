@@ -57,12 +57,6 @@
         to="/signup"
         flat
       />
-      <q-btn
-        label="Iniciar con Google"
-        class="full-width q-mt-md google-btn"
-        @click="onGoogleLogin"
-        flat
-      />
     </div>
   </div>
 </template>
@@ -72,7 +66,6 @@ import { ref } from "vue";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { Notify } from "quasar";
-import { onMounted } from "vue";
 import Cookies from "js-cookie";
 
 const router = useRouter();
@@ -96,13 +89,13 @@ const onLogin = async () => {
     }
     console.log(response.data);
   } catch (error) {
-    if (error.response.status === 404) {
+    if (error.status === 404) {
       Notify.create({
         message: "Usuario no encontrado",
         color: "negative",
         position: "top",
       });
-    } else if (error.response.status === 401) {
+    } else if (error.status === 401) {
       Notify.create({
         message: "Creedenciales incorrectas",
         color: "negative",
@@ -117,10 +110,6 @@ const onLogin = async () => {
       console.error(error);
     }
   }
-};
-
-const onGoogleLogin = () => {
-  console.log("Inicio con google");
 };
 
 const onForgotPassword = () => {
