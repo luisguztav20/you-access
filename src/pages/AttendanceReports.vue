@@ -14,11 +14,8 @@
             label="Fecha inicial"
             type="date"
             v-model="startDate"
+            :rules="[validateStartDate]"
             class="col-xs-12 col-sm-6"
-            :rules="[
-              (val) =>
-                (val !== null && val !== '') || 'Ingrese una fecha inicial',
-            ]"
             clearable
           />
           <q-input
@@ -242,6 +239,13 @@ const onSubmit = () => {
         console.log(error);
       });
   }
+};
+
+const validateStartDate = (val) => {
+  if (endDate.value && (!val || val === "")) {
+    return "Ingrese una fecha inicial";
+  }
+  return true;
 };
 
 const validateEndDate = (val) => {
