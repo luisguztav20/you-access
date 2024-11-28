@@ -64,10 +64,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { departaments } from "../data/departaments";
 import CardDepartaments from "../components/CardDepartaments.vue";
 import { api } from "src/boot/axios";
-import { getRoleFromToken } from "../utils/tokenUtils";
 import { Notify } from "quasar";
 import { io } from "socket.io-client";
 

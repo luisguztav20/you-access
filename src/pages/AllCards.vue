@@ -3,9 +3,7 @@
     <section>
       <div class="row justify-center">
         <div class="column col-11">
-          <h1 class="text-primary text-h4 text-bold">
-            Todas las tarjetas
-          </h1>
+          <h1 class="text-primary text-h4 text-bold">Todas las tarjetas</h1>
           <q-separator class="q-mt-lg" />
         </div>
       </div>
@@ -57,7 +55,7 @@ const notify = (message, color) => {
   });
 };
 
-const socket = io("http://localhost:3000");
+const socket = io("https://youaccess-backend-0388e95e5b0d.herokuapp.com");
 
 socket.on("connect", () => {
   console.log("Conectado al servidor");
