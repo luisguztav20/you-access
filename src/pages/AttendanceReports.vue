@@ -50,6 +50,7 @@
             icon="picture_as_pdf"
             color="primary"
             class="q-mt-md"
+            @click="onGenerateReport"
           />
           <q-btn
             v-if="stateReports"
@@ -74,6 +75,7 @@
           class="q-mt-md"
           flat
           bordered
+          v-model:pagination="pagination"
         />
       </q-card>
     </div>
@@ -84,6 +86,8 @@
 import { ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
 import { Notify } from "quasar";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const notify = (message, color) => {
   Notify.create({
@@ -105,9 +109,27 @@ const stateReports = ref(false);
 // Datos de la tabla
 
 const columns = ref([
-  { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-  { name: "email", label: "EMAIL", align: "left", field: "email" },
-  { name: "entrada", label: "ENTRADA", align: "left", field: "entrada" },
+  {
+    name: "nombre",
+    label: "NOMBRE",
+    align: "left",
+    field: "nombre",
+    sortable: true,
+  },
+  {
+    name: "email",
+    label: "EMAIL",
+    align: "left",
+    field: "email",
+    sortable: true,
+  },
+  {
+    name: "entrada",
+    label: "ENTRADA",
+    align: "left",
+    field: "entrada",
+    sortable: true,
+  },
   { name: "salida", label: "SALIDA", align: "left", field: "salida" },
 ]);
 
@@ -148,15 +170,19 @@ const onSubmit = () => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log("All data", response.data);
-        const { attendances } = response.data;
-        console.log(attendances);
-        rows.value = attendances.map((item) => ({
-          nombre: `${item.userId.name} ${item.userId.lastName}`,
-          email: `${item.userId.email}`,
-          entrada: formatDate(item.checkIn),
-          salida: formatDate(item.checkOut),
-        }));
+        if (response.status === 200) {
+          notify(
+            `Asistencias encontradas: ${response.data.length}`,
+            "positive"
+          );
+          stateReports.value = true;
+          rows.value = response.data.map((item) => ({
+            nombre: `${item.userId.name} ${item.userId.lastName}`,
+            email: `${item.userId.email}`,
+            entrada: formatDate(item.checkIn),
+            salida: formatDate(item.checkOut),
+          }));
+        }
       })
       .catch((error) => {
         if (error.status === 404) {
@@ -194,16 +220,13 @@ const onSubmit = () => {
             salida: formatDate(item.checkOut),
           }));
         }
-        rows.value = response.data.map((item) => ({
-          nombre: `${item.userId.name} ${item.userId.lastName}`,
-          email: `${item.userId.email}`,
-          entrada: formatDate(item.checkIn),
-          salida: formatDate(item.checkOut),
-        }));
       })
       .catch((error) => {
         if (error.status === 404) {
-          notify("No hay registros de asistencia", "negative");
+          notify(
+            "No hay registros de asistencia en el rango de fechas seleccionado",
+            "negative"
+          );
         }
         console.log(error);
       });
@@ -241,28 +264,137 @@ const onSubmit = () => {
   }
 };
 
+const onGenerateReport = () => {
+  const date = new Date();
+  const doc = new jsPDF();
+
+  const startDatePDF = new Date(startDate.value);
+  const endDatePDF = new Date(endDate.value);
+
+  doc.addImage(
+    "https://res.cloudinary.com/dxn123hvx/image/upload/v1731063325/you-access_ecs6eq.png",
+    "PNG",
+    14,
+    10,
+    15,
+    15
+  );
+
+  doc.setFontSize(18);
+  doc.setTextColor(22, 50, 91);
+  doc.text("Reporte de Asistencias - YouAccess", 35, 20);
+
+  if (
+    startDate.value === null &&
+    endDate.value === null &&
+    selectedDepartment.value === null
+  ) {
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Todas las asistencias registradas en el sistema`, 14, 35);
+  } else if (
+    startDate.value != null &&
+    endDate.value != null &&
+    selectedDepartment.value === null
+  ) {
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(
+      `Asistencias registradas entre ${startDatePDF.toLocaleDateString()} y ${endDatePDF.toLocaleDateString()}`,
+      14,
+      35
+    );
+  } else if (
+    startDate.value === null &&
+    endDate.value === null &&
+    selectedDepartment.value != null
+  ) {
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(
+      `Asistencias registradas en el departamento de ${selectedDepartment.value.label}`,
+      14,
+      35
+    );
+  }
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Generado el: ${date.toLocaleDateString()}`, 160, 8);
+
+  doc.autoTable({
+    startY: 45,
+    head: [["Nombre", "Email", "Entrada", "Salida"]],
+    body: rows.value.map((row) => [
+      row.nombre,
+      row.email,
+      row.entrada,
+      row.salida,
+    ]),
+    headStyles: {
+      fillColor: [22, 50, 91],
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+    },
+    bodyStyles: {
+      textColor: [0, 0, 0],
+    },
+  });
+
+  // Guardar el PDF con la fecha y hora actual en el nombre
+  doc.save(
+    `reporte_asistencias_${date.toISOString().slice(0, 10)}_${date
+      .toLocaleTimeString()
+      .replace(/:/g, "-")}.pdf`
+  );
+};
+
 const validateStartDate = (val) => {
+  const currentDate = new Date();
+  const dateForValidation = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate()
+  );
+
   if (endDate.value && (!val || val === "")) {
     return "Ingrese una fecha inicial";
+  }
+
+  const startDate = new Date(val);
+
+  if (startDate > dateForValidation) {
+    return `La fecha final no puede ser mayor a la fecha actual: ${dateForValidation
+      .toISOString()
+      .slice(0, 10)}`;
   }
   return true;
 };
 
 const validateEndDate = (val) => {
   const currentDate = new Date();
-  const dateForValidation = `${currentDate.getFullYear()}-${
-    currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
-  console.log("Fecha actual", dateForValidation);
+  const dateForValidation = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate()
+  );
+
   if (startDate.value && (!val || val === "")) {
     return "Ingrese una fecha final";
   }
-  if (val < startDate.value) {
+
+  const endDate = new Date(val);
+  const startDateValue = new Date(startDate.value);
+
+  if (endDate < startDateValue) {
     return "La fecha final no puede ser menor a la fecha inicial";
   }
-  if (val > dateForValidation) {
-    return `La fecha final no puede ser mayor a la fecha actual: ${currentDate}`;
+
+  if (endDate > dateForValidation) {
+    return `La fecha final no puede ser mayor a la fecha actual: ${dateForValidation
+      .toISOString()
+      .slice(0, 10)}`;
   }
+
   return true;
 };
 
@@ -271,6 +403,13 @@ const formatDate = (date) => {
   const newDate = new Date(date);
   return `${newDate.toLocaleDateString()} ${newDate.toLocaleTimeString()}`;
 };
+
+const pagination = ref({
+  sortBy: "entrada",
+  descending: true,
+  page: 1,
+  rowsPerPage: 15,
+});
 
 const onReset = () => {
   startDate.value = null;

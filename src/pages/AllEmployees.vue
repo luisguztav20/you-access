@@ -54,7 +54,7 @@ const notify = (message, color) => {
   });
 };
 
-const socket = io("https://youaccess-backend-0388e95e5b0d.herokuapp.com");
+const socket = io(import.meta.env.VITE_API_URL);
 
 socket.on("connect", () => {
   console.log("Conectado al servidor");

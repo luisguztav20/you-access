@@ -129,7 +129,6 @@ onMounted(() => {
     })
     .then((response) => {
       user.value = response.data;
-      console.log(user.value);
     })
     .catch((error) => {
       Notify.create({

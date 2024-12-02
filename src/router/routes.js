@@ -28,7 +28,7 @@ const routes = [
         component: () => import("src/pages/AdminEditEmployee.vue"),
       },
       {
-        path: "reports",
+        path: "attendance-reports",
         component: () => import("src/pages/AttendanceReports.vue"),
       },
       {

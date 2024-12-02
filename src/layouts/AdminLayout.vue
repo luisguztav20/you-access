@@ -61,7 +61,7 @@ const linksList = [
   {
     title: "Ver asistencias",
     icon: "description",
-    name: "admin/reports",
+    name: "admin/attendance-reports",
   },
   {
     title: "Agregar empleado a departamento",

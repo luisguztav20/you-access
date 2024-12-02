@@ -1,196 +1,94 @@
 <template>
-  <div class="row justify-center">
-    <div class="col-11 col-md-10 col-lg-8">
-      <h4 class="text-primary text-bold mb-2">Mis asistencias</h4>
-
-      <h7 class="text-center my-subtitle">Filtrar asistencias</h7>
-
-      <div class="row items-center">
-        <div class="row items-center col-12 col-md-12">
-          <q-input
-            v-model="date"
-            outlined
-            type="date"
-            label="Fecha inicial"
-            class="q-py-md col-12 col-md-5 q-mr-md"
-            :error="errorDate"
-            :error-message="errorMessageDate"
-            @blur="validateDate"
-          />
-          <q-input
-            v-model="dateEnd"
-            outlined
-            type="date"
-            label="Fecha final"
-            class="q-py-md col-12 col-md-5"
-            @blur="validateDate"
-          />
-        </div>
-
-        <q-btn
-          color="primary"
-          rounded
-          icon="description"
-          label="Consultar"
-          class="q-my-md col-12 col-sm-4 col-md-3 q-mr-md"
-          @click="showReports"
-        />
-        <q-btn
-          v-if="stateReport"
-          outline
-          color="primary"
-          rounded
-          label="limpar datos"
-          class="q-my-md col-12 col-sm-4 col-md-3"
-          @click="clear"
-        />
+  <q-page padding>
+    <div class="q-pa-md">
+      <div class="text-h5 text-center q-mb-md text-primary q-mb-xl">
+        Reporte de asistencia
       </div>
 
-      <div v-if="stateReport">
-        <q-separator class="q-mt-md" />
-        <q-card class="my-card col-12 q-my-md" flat bordered>
-          <q-card-section>
-            <q-table
-              style="max-height: 400px"
-              flat
-              bordered
-              :rows="rows"
-              :columns="columns"
-              row-key="index"
-              virtual-scroll
-              v-model:pagination="pagination"
-              :rows-per-page-options="[0]"
-            />
-          </q-card-section>
-          <q-separator />
-        </q-card>
-      </div>
+      <q-table
+        :rows="rows"
+        :columns="columns"
+        row-key="email"
+        class="q-mt-md"
+        flat
+        bordered
+        v-model:pagination="pagination"
+      />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup>
-import { ref } from "vue";
-const date = ref("");
-const dateEnd = ref("");
-const errorDate = ref(false);
-const errorMessageDate = ref("Campo vacío");
-const stateReport = ref(false);
+import { ref, onMounted } from "vue";
+import { api } from "src/boot/axios";
+import { Notify } from "quasar";
+import { getIDFromToken } from "src/utils/token_id";
 
-// Funciones de validación
-const validateDate = () => {
-  errorDate.value = date.value === "";
-};
-// Llamada al hacer clic en el botón "Marcar asistencia"
-const showReports = () => {
-  validateDate();
-  if (!errorDate.value) {
-    //Funciones cuando no hay campos vacios
-
-    stateReport.value = true;
-  }
-};
-
-function clear() {
-  stateReport.value = false;
-  date.value = "";
-  dateEnd.value = "";
-}
-const columns = [
-  {
-    name: "id",
-    label: "ID",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    align: "left",
-    sortable: true,
-  },
+const columns = ref([
   { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
-  { name: "fecha", label: "FECHA", align: "left", field: "fecha" },
+  { name: "email", label: "EMAIL", align: "left", field: "email" },
   {
     name: "entrada",
-    label: "HORA ENTRADA",
-    align: "center",
+    label: "ENTRADA",
+    align: "left",
     field: "entrada",
     sortable: true,
   },
-  {
-    name: "salida",
-    label: "HORA SALIDA",
-    align: "center",
-    field: "salida",
-    sortable: true,
-  },
-];
-
-const rows = ref([
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "2/5/2024",
-    entrada: "7:05",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
-  {
-    name: "ING00124",
-    nombre: "Luis Gustavo Alfaro Mendoza",
-    fecha: "1/5/2024",
-    entrada: "7:00",
-    salida: "17:00",
-  },
+  { name: "salida", label: "SALIDA", align: "left", field: "salida" },
 ]);
 
+const rows = ref([]);
+
+onMounted(() => {
+  const id = getIDFromToken();
+
+  api
+    .get(`/api/attendance/user/${id}`)
+    .then((response) => {
+      if (response.status === 200) {
+        console.log("Respuesta de asistencias:", response);
+        const data = response.data;
+        if (data.length === 0) {
+          notify("No se encontraron asistencias", "negative");
+        } else {
+          rows.value = data.map((item) => ({
+            nombre: item.userId.name + " " + item.userId.lastName,
+            email: item.userId.email,
+            entrada: formatDate(item.checkIn),
+            salida: formatDate(item.checkOut),
+          }));
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Error al obtener asistencias:", error);
+      if (error.response.status === 404) {
+        notify("No se encontraron asistencias", "negative");
+      }
+      notify("Error al obtener asistencias", "negative");
+    });
+});
+
+const notify = (message, color) => {
+  Notify.create({
+    message: message,
+    color: color,
+    position: "top",
+    timeout: 2000,
+  });
+};
+
+const formatDate = (date) => {
+  if (!date) return "Sin marcar";
+  const newDate = new Date(date);
+  return `${newDate.toLocaleDateString()} ${newDate.toLocaleTimeString()}`;
+};
+
 const pagination = ref({
-  rowsPerPage: 0, // Todas las filas visibles
+  sortBy: "entrada",
+  descending: true,
+  page: 1,
+  rowsPerPage: 15,
 });
 </script>
 
