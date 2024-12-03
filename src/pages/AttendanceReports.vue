@@ -109,6 +109,7 @@ const stateReports = ref(false);
 // Datos de la tabla
 
 const columns = ref([
+  { index: "index", label: "#", align: "left", field: "index", sortable: true },
   {
     name: "nombre",
     label: "NOMBRE",
@@ -176,7 +177,8 @@ const onSubmit = () => {
             "positive"
           );
           stateReports.value = true;
-          rows.value = response.data.map((item) => ({
+          rows.value = response.data.map((item, index) => ({
+            index: index + 1,
             nombre: `${item.userId.name} ${item.userId.lastName}`,
             email: `${item.userId.email}`,
             entrada: formatDate(item.checkIn),
@@ -213,7 +215,8 @@ const onSubmit = () => {
             "positive"
           );
           stateReports.value = true;
-          rows.value = response.data.map((item) => ({
+          rows.value = response.data.map((item, index) => ({
+            index: index + 1,
             nombre: `${item.userId.name} ${item.userId.lastName}`,
             email: `${item.userId.email}`,
             entrada: formatDate(item.checkIn),
@@ -247,7 +250,8 @@ const onSubmit = () => {
           const { attendances } = response.data;
           notify(`Asistencias encontradas: ${attendances.length}`, "positive");
           stateReports.value = true;
-          rows.value = attendances.map((item) => ({
+          rows.value = attendances.map((item, index) => ({
+            index: index + 1,
             nombre: `${item.userId.name} ${item.userId.lastName}`,
             email: `${item.userId.email}`,
             entrada: formatDate(item.checkIn),
@@ -312,7 +316,7 @@ const onGenerateReport = () => {
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
     doc.text(
-      `Asistencias registradas en el departamento de ${selectedDepartment.value.label}`,
+      `Asistencias registradas en el Departamento de ${selectedDepartment.value.label}`,
       14,
       35
     );
@@ -323,8 +327,9 @@ const onGenerateReport = () => {
 
   doc.autoTable({
     startY: 45,
-    head: [["Nombre", "Email", "Entrada", "Salida"]],
+    head: [["#", "Nombre", "Email", "Entrada", "Salida"]],
     body: rows.value.map((row) => [
+      row.index,
       row.nombre,
       row.email,
       row.entrada,

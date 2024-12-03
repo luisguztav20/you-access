@@ -18,7 +18,7 @@
       <q-separator class="q-mx-lg q-mt-lg" />
       <q-card-section class="q-px-lg">
         <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-          <q-input
+          <!-- <q-input
             v-model="date"
             outlined
             type="date"
@@ -35,7 +35,7 @@
             type="date"
             label="Fecha final"
             class="q-py-md full-width"
-          />
+          /> -->
 
           <div class="row items-center q-gutter-x-lg">
             <q-btn
@@ -54,6 +54,7 @@
               icon="picture_as_pdf"
               label="Generar reporte"
               class="col-11 col-md-3"
+              @click="onGenerateReport"
             />
             <q-btn
               flat
@@ -92,6 +93,8 @@
 import { Notify } from "quasar"; // Importar Notify de Quasar
 import { ref, watch } from "vue";
 import { api } from "src/boot/axios";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const props = defineProps({
   modelValue: Boolean,
@@ -118,102 +121,125 @@ watch(
 );
 
 const columns = ref([
+  { index: "index", label: "#", align: "left", field: "index", sortable: true },
   { name: "nombre", label: "NOMBRE", align: "left", field: "nombre" },
   { name: "email", label: "EMAIL", align: "left", field: "email" },
-  { name: "entrada", label: "ENTRADA", align: "left", field: "entrada" },
+  {
+    name: "entrada",
+    label: "ENTRADA",
+    align: "left",
+    field: "entrada",
+    sortable: true,
+  },
   { name: "salida", label: "SALIDA", align: "left", field: "salida" },
 ]);
 
-const rows = ref([
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-  {
-    nombre: "Nombre",
-    email: "Email",
-    entrada: "Entrada",
-    salida: "Salida",
-  },
-]);
+const rows = ref([]);
 
 const pagination = ref({
-  sortBy: "nombre",
-  descending: false,
-  rowsPerPage: 5,
+  sortBy: "entrada",
+  descending: true,
+  rowsPerPage: 10,
 });
 
-const date = ref("");
-const dateEnd = ref("");
 const stateReport = ref(false);
 
-const notifyPosivite = (message) => {
+const notify = (message, color) => {
   Notify.create({
-    message: message,
-    type: "positive",
-    position: "bottom",
+    message,
+    color,
+    position: "top",
     timeout: 2000,
   });
 };
 
 const onSubmit = () => {
-  notifyPosivite("Datos enviados");
-  stateReport.value = true;
+  api
+    .get(`/api/attendance/user/${props.employee._id}`)
+    .then((response) => {
+      if (response.status === 200) {
+        rows.value = response.data.map((item, index) => ({
+          index: index + 1,
+          nombre: `${item.userId.name} ${item.userId.lastName}`,
+          email: `${item.userId.email}`,
+          entrada: formatDate(item.checkIn),
+          salida: formatDate(item.checkOut),
+        }));
+        stateReport.value = true;
+      }
+    })
+    .catch((error) => {
+      if (error.status === 404) {
+        notify("No se encontraron registros", "negative");
+      }
+      console.error(error);
+    });
+};
+
+const onGenerateReport = () => {
+  const date = new Date();
+  const doc = new jsPDF();
+
+  doc.addImage(
+    "https://res.cloudinary.com/dxn123hvx/image/upload/v1731063325/you-access_ecs6eq.png",
+    "PNG",
+    14,
+    10,
+    15,
+    15
+  );
+
+  doc.setFontSize(18);
+  doc.setTextColor(22, 50, 91);
+  doc.text("Reporte de Asistencias - YouAccess", 35, 20);
+
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text(
+    `Asistencias del empleado ${props.employee.name} ${props.employee.lastName} - ${props.employee.email}`,
+    14,
+    35
+  );
+
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Generado el: ${date.toLocaleDateString()}`, 160, 8);
+
+  doc.autoTable({
+    startY: 45,
+    head: [["#", "Nombre", "Email", "Entrada", "Salida"]],
+    body: rows.value.map((row) => [
+      row.index,
+      row.nombre,
+      row.email,
+      row.entrada,
+      row.salida,
+    ]),
+    headStyles: {
+      fillColor: [22, 50, 91],
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+    },
+    bodyStyles: {
+      textColor: [0, 0, 0],
+    },
+  });
+
+  // Guardar el PDF con la fecha y hora actual en el nombre
+  doc.save(
+    `reporte_asistencias_${date.toISOString().slice(0, 10)}_${
+      props.employee.name
+    }-${props.employee.lastName}.pdf`
+  );
+};
+
+const formatDate = (date) => {
+  if (!date) return "Sin marcar";
+  const newDate = new Date(date);
+  return `${newDate.toLocaleDateString()} ${newDate.toLocaleTimeString()}`;
 };
 
 const onReset = () => {
-  date.value = null;
-  dateEnd.value = null;
   stateReport.value = false;
 };
 </script>
