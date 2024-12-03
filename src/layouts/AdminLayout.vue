@@ -5,7 +5,7 @@
         <q-btn flat dense round icon="menu" @click="toggleLeftDrawer" />
         <div class="row q-ml-md">
           <img
-            src="/src/assets/you-access-logo-01-white.svg"
+            src="/public/you-access-logo-01-white.svg"
             style="width: 125px"
           />
         </div>

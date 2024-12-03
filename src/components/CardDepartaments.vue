@@ -1,7 +1,7 @@
 <template>
   <div class="col-12 col-sm-6 col-md-6 col-lg-3">
     <q-card class="card-mod cursor-pointer">
-      <img class="card-img" src="/src/assets/card-image.webp" />
+      <img class="card-img" src="/public/card-image.webp" />
 
       <q-card-section>
         <h3 class="text-subtitle1 q-ma-none q-pb-md text-weight-bold">
