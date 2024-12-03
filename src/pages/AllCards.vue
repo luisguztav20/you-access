@@ -20,7 +20,7 @@
             class="relative-position overflow-hidden card-container"
             style="aspect-ratio: 16/9"
           >
-            <img src="/public/logo.png" alt="Logo" class="logo" />
+            <img src="/logo.png" alt="Logo" class="logo" />
             <span
               class="absolute text-h6 text-primary card-id"
               style="top: 8px; right: 4px"

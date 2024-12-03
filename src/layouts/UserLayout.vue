@@ -4,7 +4,7 @@
       <q-toolbar class="row justify-between">
         <div class="row col-11 justify-center">
           <img
-            src="/public/you-access-logo-01-white.svg"
+            src="/you-access-logo-01-white.svg"
             style="width: 125px"
           />
         </div>

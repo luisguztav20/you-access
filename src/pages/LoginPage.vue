@@ -1,7 +1,7 @@
 <template>
   <nav>
     <q-toolbar class="row justify-center col-1">
-      <img src="/public/you-access-logo-01.svg" style="width: 125px" />
+      <img src="/you-access-logo-01.svg" style="width: 125px" />
     </q-toolbar>
   </nav>
 
