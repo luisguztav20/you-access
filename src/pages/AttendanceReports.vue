@@ -87,7 +87,7 @@ import { ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
 import { Notify } from "quasar";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 const notify = (message, color) => {
   Notify.create({
@@ -325,7 +325,7 @@ const onGenerateReport = () => {
   doc.setTextColor(0, 0, 0);
   doc.text(`Generado el: ${date.toLocaleDateString()}`, 160, 8);
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: 45,
     head: [["#", "Nombre", "Email", "Entrada", "Salida"]],
     body: rows.value.map((row) => [
